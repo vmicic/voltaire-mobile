@@ -2,7 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import ProfileScreen from '../screens/profile';
-import Restaurants from '../screens/restaurants';
+import RestaurantsStackScreen from '../screens/RestaurantsStackScreen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const Tab = createBottomTabNavigator();
@@ -29,7 +29,7 @@ export default function BottomTabNavigator() {
           inactiveTintColor: 'gray',
         }}
       >
-        <Tab.Screen name="Restaurants" component={Restaurants} />
+        <Tab.Screen name="Restaurants" component={RestaurantsStackScreen} />
         <Tab.Screen name="Profile" component={ProfileScreen} />
       </Tab.Navigator>
     </NavigationContainer>

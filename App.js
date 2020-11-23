@@ -1,26 +1,12 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import Login from './components/login';
+import BottomTabNavigator from './navigation/BottomTabNavigator'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+
+const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <View style={styles.content}>
-        <Login />
-      </View>
-    </View>
-  )
+      <BottomTabNavigator />
+  );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  content: {
-    padding: 40,
-  },
-  list: {
-    marginTop: 20,
-  },
-});

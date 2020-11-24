@@ -29,7 +29,7 @@ export default function RestaurantScreen({ route, navigation }) {
           showsVerticalScrollIndicator={false}
           data={restaurantWithMenuItems.menuItems}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => navigation.navigate('MenuItem', {menuItem: item})}>
+            <TouchableOpacity onPress={() => navigation.navigate('Menu Item', {menuItem: item})}>
               <MenuItem menuItem={item} />
             </TouchableOpacity>
           )} />

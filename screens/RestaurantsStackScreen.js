@@ -18,7 +18,7 @@ export default function RestaurantsStackScreen() {
     <RestaurantsStack.Navigator>
       <RestaurantsStack.Screen name="Restaurants" component={RestaurantsScreen} />
       <RestaurantsStack.Screen name="Restaurant" component={RestaurantScreen} />
-      <RestaurantsStack.Screen name="MenuItem" component={MenuItemScreen} />
+      <RestaurantsStack.Screen name="Menu Item" component={MenuItemScreen} />
     </RestaurantsStack.Navigator>
   );
 }

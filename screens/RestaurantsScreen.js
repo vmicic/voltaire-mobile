@@ -10,8 +10,7 @@ export default function RestaurantsScreen({ navigation }) {
         { key: '2', name: 'Sef', description: 'Best sendwichees', address: 'Brace Ribnikar 3' },
         { key: '3', name: 'Kao nekad', description: 'Best cooked meals', address: 'Danila Kisa 4' }
     ])
-
-
+    
     return (
         <View style={styles.content}>
             <FlatList
@@ -31,6 +30,6 @@ const styles = StyleSheet.create({
     content: {
         flex: 1,
         padding: 20,
-        backgroundColor: 'yellow',
+        backgroundColor: 'white',
     },
 });

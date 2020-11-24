@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     restaurantItem: {
         padding: 16,
         marginTop: 16,
-        borderColor: 'black',
+        borderColor: '#e0deda',
         borderWidth: 1,
         borderRadius: 10
     }

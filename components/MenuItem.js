@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 export default function MenuItem({ menuItem }) {
     return (
-        <View style={styles.menuItem}>
+        <View style={styles.menuItemContainer}>
             <Text>
                 {menuItem.name}
             </Text>
@@ -18,8 +18,10 @@ export default function MenuItem({ menuItem }) {
 }
 
 const styles = StyleSheet.create({
-    menuItem: {
-        padding: 16,
+    menuItemContainer: {
+        padding: 20,
         marginTop: 16,
+        borderBottomColor: '#e6ebe7',
+        borderBottomWidth: 1,
     }
 });

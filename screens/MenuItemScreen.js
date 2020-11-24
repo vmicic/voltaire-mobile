@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { StyleSheet, View, Text, Button } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 
 export default function MenuItemScreen({ route, navigation }) {
 
     const { menuItem } = route.params;
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+          title: ""
+        });
+      }, [navigation, ""]);
 
     return (
         <View style={styles.menuItemContainer}>

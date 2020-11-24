@@ -1,28 +1,25 @@
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function RestaurantItem({ restaurant }) {
+export default function MenuItem({ menuItem }) {
     return (
-        <View style={styles.restaurantItem}>
+        <View style={styles.menuItem}>
             <Text>
-                {restaurant.name}
+                {menuItem.name}
             </Text>
             <Text>
-                {restaurant.description}
+                {menuItem.description}
             </Text>
             <Text>
-                {restaurant.address}
+                {menuItem.price} RSD
             </Text>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    restaurantItem: {
+    menuItem: {
         padding: 16,
         marginTop: 16,
-        borderColor: 'black',
-        borderWidth: 1,
-        borderRadius: 10
     }
 });

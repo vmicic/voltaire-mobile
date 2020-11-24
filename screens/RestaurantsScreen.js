@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
-import RestaurantItem from '../components/restaurantItem'
+import RestaurantItem from '../components/RestaurantItem'
 
-export default function RestaurantsScreen() {
+export default function RestaurantsScreen({ navigation }) {
     [resturants, setRestaurants] = useState([
         { key: '1', name: 'La fresh', description: 'Best pizza', address: 'Brace Ribnikar 10' },
         { key: '2', name: 'Sef', description: 'Best sendwichees', address: 'Brace Ribnikar 3' },
@@ -17,17 +17,17 @@ export default function RestaurantsScreen() {
             <FlatList
                 data={resturants}
                 renderItem={({ item }) => (
-                    <RestaurantItem item={item} />
+                    <TouchableOpacity onPress={() => {
+                        navigation.navigate('Restaurant', { restaurantId: item.key });
+                    }}>
+                        <RestaurantItem restaurant={item} />
+                    </TouchableOpacity>
                 )} />
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: 'aqua',
-    },
     content: {
         flex: 1,
         padding: 20,

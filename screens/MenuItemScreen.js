@@ -1,18 +1,41 @@
 import React, { useState, useLayoutEffect } from 'react';
-import { StyleSheet, View, Text, Button } from 'react-native';
-import { TextInput } from 'react-native-gesture-handler';
+import { StyleSheet, View, Text, Button, Keyboard, TextInput, TouchableWithoutFeedback } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export default function MenuItemScreen({ route, navigation }) {
+    [quantity, setQuantity] = useState(0);
+
+    const increaseQuantity = () => {
+        setQuantity(previousQuantity => {
+            return (previousQuantity + 1)
+        })
+    }
+
+    const deductQuantity = () => {
+        setQuantity(previousQuantity => {
+            if (previousQuantity > 0) {
+                return (previousQuantity - 1)
+            }
+
+            return 0;
+        })
+    }
 
     const { menuItem } = route.params;
 
     useLayoutEffect(() => {
         navigation.setOptions({
-          title: ""
+            title: ""
         });
-      }, [navigation, ""]);
+    }, [navigation, ""]);
+
+
 
     return (
+        <TouchableWithoutFeedback
+            onPress={() => {
+                Keyboard.dismiss();
+            }}>
         <View style={styles.menuItemContainer}>
             <View style={styles.menuItemNameContainer}>
                 <Text style={styles.menuItemName}>
@@ -30,9 +53,25 @@ export default function MenuItemScreen({ route, navigation }) {
                         </Text>
                 </View>
                 <View style={styles.quantityInputContainer}>
-                    <TextInput style={styles.quantityInput}>
-
-                    </TextInput>
+                    <Icon.Button
+                        name='remove'
+                        size={25}
+                        style={styles.buttonStyle}
+                        iconStyle={{ marginRight: 1 }}
+                        color="black"
+                        backgroundColor="white"
+                        onPress={() => deductQuantity()}
+                    />
+                    <Text style={{ textAlignVertical: 'center' }}>{quantity}</Text>
+                    <Icon.Button
+                        name='add'
+                        size={25}
+                        iconStyle={{ marginRight: 1 }}
+                        style={{ borderColor: "black", borderWidth: 1, borderRadius: 25 }}
+                        color="black"
+                        backgroundColor="white"
+                        onPress={() => increaseQuantity()}
+                    />
                 </View>
             </View>
 
@@ -42,19 +81,20 @@ export default function MenuItemScreen({ route, navigation }) {
                     <View style={styles.additionalInfoInputContainer}>
                         <TextInput
                             style={styles.additionalInfoInput}
-                            placeholder="If you have additional informations please write it here fadjfklsdjdfsa"
+                            placeholder="If you have additional informations please write it here."
                             multiline={true}
                         />
                     </View>
                 </View>
                 <View>
-                    <Button 
+                    <Button
                         title="Add to order"
                     />
                 </View>
             </View>
 
         </View>
+        </TouchableWithoutFeedback>
     );
 }
 
@@ -82,19 +122,29 @@ const styles = StyleSheet.create({
     quantityLabelContainer: {
         flex: 3,
         flexDirection: 'row',
-        height: 50
+        height: 50,
+        backgroundColor: 'white'
     },
     quantityLabel: {
         textAlignVertical: 'center'
     },
     quantityInputContainer: {
-        flex: 1,
+        flex: 2,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        backgroundColor: 'white',
+        alignItems: 'center'
     },
     quantityInput: {
         width: 60,
         height: 50,
         backgroundColor: '#edf0ee',
         textAlign: 'center'
+    },
+    buttonStyle: {
+        borderColor: "black",
+        borderWidth: 1,
+        borderRadius: 25
     },
     additionalInfoContainer: {
         flex: 1,

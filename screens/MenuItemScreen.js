@@ -1,9 +1,13 @@
 import React, { useState, useLayoutEffect } from 'react';
 import { StyleSheet, View, Text, Button, Keyboard, TextInput, TouchableWithoutFeedback } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function MenuItemScreen({ route, navigation }) {
     [quantity, setQuantity] = useState(0);
+    [additionalInfo, setAdditionalInfo] = useState('');
+
+    const { menuItem } = route.params;
 
     const increaseQuantity = () => {
         setQuantity(previousQuantity => {
@@ -21,7 +25,41 @@ export default function MenuItemScreen({ route, navigation }) {
         })
     }
 
-    const { menuItem } = route.params;
+    const updateAdditionalInfo = (val) => {
+        setAdditionalInfo(val);
+    }
+
+    const addToOrder = async () => {
+        let order = await getOrder();
+        order.orderItems.push({ menuItemId: menuItem.id, quantity: quantity, additionalInfo: additionalInfo })
+        saveOrder(order);
+    }
+
+    const getOrder = async () => {
+        try {
+            const orderJson = await AsyncStorage.getItem('@order')
+            if (orderJson === null) {
+                let order = {
+                    restaurantId: menuItem.restaurantId,
+                    orderItems: []
+                }
+                return order;
+            }
+
+            return JSON.parse(orderJson);
+        } catch (e) {
+        }
+    }
+
+    const saveOrder = async (order) => {
+        try {
+            console.log(order);
+            const jsonValue = JSON.stringify(order)
+            await AsyncStorage.setItem('@order', jsonValue)
+          } catch (e) {
+            // saving error
+          }
+    }
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -29,71 +67,72 @@ export default function MenuItemScreen({ route, navigation }) {
         });
     }, [navigation, ""]);
 
-
-
     return (
         <TouchableWithoutFeedback
             onPress={() => {
                 Keyboard.dismiss();
             }}>
-        <View style={styles.menuItemContainer}>
-            <View style={styles.menuItemNameContainer}>
-                <Text style={styles.menuItemName}>
-                    {menuItem.name}
-                </Text>
-                <Text>
-                    {menuItem.description}
-                </Text>
-            </View>
+            <View style={styles.menuItemContainer}>
+                <View style={styles.menuItemNameContainer}>
+                    <Text style={styles.menuItemName}>
+                        {menuItem.name}
+                    </Text>
+                    <Text>
+                        {menuItem.description}
+                    </Text>
+                </View>
 
-            <View style={styles.quantityContainer}>
-                <View style={styles.quantityLabelContainer}>
-                    <Text style={styles.quantityLabel}>
-                        Quantity:
+                <View style={styles.quantityContainer}>
+                    <View style={styles.quantityLabelContainer}>
+                        <Text style={styles.quantityLabel}>
+                            Quantity:
                         </Text>
-                </View>
-                <View style={styles.quantityInputContainer}>
-                    <Icon.Button
-                        name='remove'
-                        size={25}
-                        style={styles.buttonStyle}
-                        iconStyle={{ marginRight: 1 }}
-                        color="black"
-                        backgroundColor="white"
-                        onPress={() => deductQuantity()}
-                    />
-                    <Text style={{ textAlignVertical: 'center' }}>{quantity}</Text>
-                    <Icon.Button
-                        name='add'
-                        size={25}
-                        iconStyle={{ marginRight: 1 }}
-                        style={{ borderColor: "black", borderWidth: 1, borderRadius: 25 }}
-                        color="black"
-                        backgroundColor="white"
-                        onPress={() => increaseQuantity()}
-                    />
-                </View>
-            </View>
-
-            <View style={styles.additionalInfoContainer}>
-                <View>
-                    <Text>Additional info: </Text>
-                    <View style={styles.additionalInfoInputContainer}>
-                        <TextInput
-                            style={styles.additionalInfoInput}
-                            placeholder="If you have additional informations please write it here."
-                            multiline={true}
+                    </View>
+                    <View style={styles.quantityInputContainer}>
+                        <Icon.Button
+                            name='remove'
+                            size={25}
+                            style={styles.buttonStyle}
+                            iconStyle={{ marginRight: 1 }}
+                            color="black"
+                            backgroundColor="white"
+                            onPress={deductQuantity}
+                        />
+                        <Text style={{ textAlignVertical: 'center' }}>{quantity}</Text>
+                        <Icon.Button
+                            name='add'
+                            size={25}
+                            iconStyle={{ marginRight: 1 }}
+                            style={{ borderColor: "black", borderWidth: 1, borderRadius: 25 }}
+                            color="black"
+                            backgroundColor="white"
+                            onPress={increaseQuantity}
                         />
                     </View>
                 </View>
-                <View>
-                    <Button
-                        title="Add to order"
-                    />
-                </View>
-            </View>
 
-        </View>
+                <View style={styles.additionalInfoContainer}>
+                    <View>
+                        <Text>Additional info: </Text>
+                        <View style={styles.additionalInfoInputContainer}>
+                            <TextInput
+                                style={styles.additionalInfoInput}
+                                placeholder="If you have additional informations please write it here."
+                                multiline={true}
+                                value={additionalInfo}
+                                onChangeText={updateAdditionalInfo}
+                            />
+                        </View>
+                    </View>
+                    <View>
+                        <Button
+                            title="Add to order"
+                            onPress={addToOrder}
+                        />
+                    </View>
+                </View>
+
+            </View>
         </TouchableWithoutFeedback>
     );
 }

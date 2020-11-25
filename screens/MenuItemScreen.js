@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function MenuItemScreen({ route, navigation }) {
-    [quantity, setQuantity] = useState(0);
+    [quantity, setQuantity] = useState(1);
     [additionalInfo, setAdditionalInfo] = useState('');
 
     const { menuItem } = route.params;
@@ -35,7 +35,7 @@ export default function MenuItemScreen({ route, navigation }) {
         }
         
         let order = await getOrder();
-        order.orderItems.push({ menuItemId: menuItem.id, price: menuItem.price, quantity: quantity, additionalInfo: additionalInfo })
+        order.orderItems.push({ menuItemId: menuItem.id, menuItemName: menuItem.name, price: menuItem.price, quantity: quantity, additionalInfo: additionalInfo })
         saveOrder(order);
         
         navigation.goBack();
@@ -59,7 +59,6 @@ export default function MenuItemScreen({ route, navigation }) {
 
     const saveOrder = async (order) => {
         try {
-            console.log(order);
             const jsonValue = JSON.stringify(order)
             await AsyncStorage.setItem('@order', jsonValue)
           } catch (e) {

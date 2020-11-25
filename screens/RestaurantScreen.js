@@ -22,16 +22,15 @@ export default function RestaurantScreen({ route, navigation }) {
   const { restaurantId } = route.params;
   const isFocused = useIsFocused();
 
-    useEffect(() => {
-      buttonSetup();
-    }, [isFocused]);
+  useEffect(() => {
+    buttonSetup();
+  }, [isFocused]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     navigation.setOptions({
       title: restaurantWithMenuItems.name,
     });
   }, [navigation, restaurantWithMenuItems.name]);
-
 
   const getOrder = async () => {
     try {
@@ -46,9 +45,11 @@ export default function RestaurantScreen({ route, navigation }) {
   }
 
   const buttonSetup = async () => {
+
+    console.log("Button setup invoked");
     let order = await getOrder();
 
-    if(order === undefined) {
+    if (order === undefined) {
       setCheckoutButtonVisible(false);
       return;
     }
@@ -85,6 +86,7 @@ export default function RestaurantScreen({ route, navigation }) {
       {checkoutButtonVisible && <View style={styles.buttonContainer}>
         <Button
           title={"Go to checkout (" + orderPrice + " RSD)"}
+          onPress={() => {navigation.navigate("Checkout")}}
         />
       </View>}
     </View>

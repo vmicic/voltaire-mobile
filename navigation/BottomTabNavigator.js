@@ -6,7 +6,7 @@ import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 import ProfileScreen from '../screens/ProfileScreen';
 import RestaurantsStackScreen from '../screens/RestaurantsStackScreen';
-import OrderDetailsScreen from '../screens/OrderDetailsScreen';
+import CheckoutScreen from '../screens/CheckoutScreen';
 
 export default function BottomTabNavigator() {
 
@@ -18,6 +18,10 @@ export default function BottomTabNavigator() {
     }
 
     if(routeName === 'Menu Item') {
+      return false;
+    }
+
+    if(routeName === 'Checkout') {
       return false;
     }
 
@@ -55,7 +59,6 @@ export default function BottomTabNavigator() {
           })}
         />
         <Tab.Screen name="Profile" component={ProfileScreen} />
-        <Tab.Screen name="Order details" component={OrderDetailsScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );

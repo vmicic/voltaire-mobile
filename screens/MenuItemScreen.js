@@ -20,7 +20,6 @@ export default function MenuItemScreen({ route, navigation }) {
             if (previousQuantity > 0) {
                 return (previousQuantity - 1)
             }
-
             return 0;
         })
     }
@@ -30,9 +29,16 @@ export default function MenuItemScreen({ route, navigation }) {
     }
 
     const addToOrder = async () => {
+        if(quantity < 1) {
+            alert("Quantity must be greater than 0.");
+            return;
+        }
+        
         let order = await getOrder();
-        order.orderItems.push({ menuItemId: menuItem.id, quantity: quantity, additionalInfo: additionalInfo })
+        order.orderItems.push({ menuItemId: menuItem.id, price: menuItem.price, quantity: quantity, additionalInfo: additionalInfo })
         saveOrder(order);
+        
+        navigation.goBack();
     }
 
     const getOrder = async () => {

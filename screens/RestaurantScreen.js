@@ -4,6 +4,7 @@ import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from "@react-navigation/native";
 import * as axios from 'react-native-axios';
+import { ActivityIndicator } from 'react-native';
 
 import MenuItem from '../components/MenuItem';
 
@@ -11,7 +12,7 @@ export default function RestaurantScreen({ route, navigation }) {
   [checkoutButtonVisible, setCheckoutButtonVisible] = useState(false);
   [orderPrice, setOrderPrice] = useState(0);
   [restaurantWithMenuItems, setRestaurantWithMenuItems] = useState({});
-  [loading, setLoading] = useState(false);
+  [loading, setLoading] = useState(true);
 
   const { restaurantId } = route.params;
   const getRestaurantUrl = 'https://voltaire-api-gateway-cvy8ozaz.ew.gateway.dev/restaurants/' + restaurantId;
@@ -34,40 +35,41 @@ export default function RestaurantScreen({ route, navigation }) {
   const getRestaurant = () => {
     console.log(getRestaurantUrl);
     axios.get(getRestaurantUrl)
-        .then(response => {
-            setRestaurantWithMenuItems(response.data)
-        })
-        .catch(error => {
-            console.log("Error fetching a single restaurants")
-            console.log(error);
-        })
-}
+      .then(response => {
+        setRestaurantWithMenuItems(response.data)
+        setLoading(false);
+      })
+      .catch(error => {
+        console.log("Error fetching a single restaurants")
+        console.log(error);
+      })
+  }
 
-axios.interceptors.request.use(
+  axios.interceptors.request.use(
     async config => {
-        const token = await getIdToken();
-        if (token) {
-            config.headers.Authorization = "Bearer " + token;
-        }
-        return config;
+      const token = await getIdToken();
+      if (token) {
+        config.headers.Authorization = "Bearer " + token;
+      }
+      return config;
     },
     error => {
-        return Promise.reject(error)
+      return Promise.reject(error)
     }
-);
+  );
 
-const getIdToken = async () => {
+  const getIdToken = async () => {
     try {
-        const idToken = await AsyncStorage.getItem('@idToken')
-        if (idToken === null) {
-            return undefined;
-        }
-        return idToken;
+      const idToken = await AsyncStorage.getItem('@idToken')
+      if (idToken === null) {
+        return undefined;
+      }
+      return idToken;
     } catch (e) {
-        console.log("Error with reading refresh token from navigation");
-        console.log(e);
+      console.log("Error with reading refresh token from navigation");
+      console.log(e);
     }
-}
+  }
 
   const getOrder = async () => {
     try {
@@ -101,34 +103,44 @@ const getIdToken = async () => {
 
 
   return (
-    <View style={styles.restaurantContainer}>
-      <View style={styles.restaurantDetailsContainer}>
-        <Text style={styles.restaurantName}>{restaurantWithMenuItems.name}</Text>
-        <Text>{restaurantWithMenuItems.address}</Text>
-        <Text>Working hours: {restaurantWithMenuItems.openingTime}:{restaurantWithMenuItems.closingTime}</Text>
-      </View>
-      <View style={styles.menuItemsContainer}>
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          data={restaurantWithMenuItems.menuItems}
-          keyExtractor={item => item.id}
-          renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => navigation.navigate('Menu Item', { menuItem: item, restaurantId: restaurantWithMenuItems.id })}>
-              <MenuItem menuItem={item} />
-            </TouchableOpacity>
-          )} />
-      </View>
-      {checkoutButtonVisible && <View style={styles.buttonContainer}>
-        <Button
-          title={"Go to checkout (" + orderPrice + " RSD)"}
-          onPress={() => { navigation.navigate("Checkout") }}
-        /> 
-      </View>}
+    <View style={styles.contentContainer}>
+      {loading ?
+        <View style={{ flex: 1, justifyContent: 'center' }}>
+          <ActivityIndicator size="large" color="blue" />
+        </View>
+        :
+        <View style={styles.restaurantContainer}>
+          <View style={styles.restaurantDetailsContainer}>
+            <Text style={styles.restaurantName}>{restaurantWithMenuItems.name}</Text>
+            <Text>{restaurantWithMenuItems.address}</Text>
+            <Text>Working hours: {restaurantWithMenuItems.openingTime}:{restaurantWithMenuItems.closingTime}</Text>
+          </View>
+          <View style={styles.menuItemsContainer}>
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              data={restaurantWithMenuItems.menuItems}
+              keyExtractor={item => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => navigation.navigate('Menu Item', { menuItem: item, restaurantId: restaurantWithMenuItems.id })}>
+                  <MenuItem menuItem={item} />
+                </TouchableOpacity>
+              )} />
+          </View>
+          {checkoutButtonVisible && <View style={styles.buttonContainer}>
+            <Button
+              title={"Go to checkout (" + orderPrice + " RSD)"}
+              onPress={() => { navigation.navigate("Checkout") }}
+            />
+          </View>}
+        </View>}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  contentContainer: {
+    flex: 1
+  },
   restaurantContainer: {
     flex: 1,
     backgroundColor: 'white'

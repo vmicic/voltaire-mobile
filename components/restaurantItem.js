@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function RestaurantItem({ restaurant }) {
     return (
         <View style={styles.restaurantItem}>
-            <Text>
+            <Text style={styles.restaurantName}>
                 {restaurant.name}
             </Text>
             <Text>
@@ -24,5 +24,10 @@ const styles = StyleSheet.create({
         borderColor: '#e0deda',
         borderWidth: 1,
         borderRadius: 10
+    },
+    restaurantName: {
+        fontWeight: 'bold',
+        fontSize: 20,
+        marginBottom: 5
     }
 });

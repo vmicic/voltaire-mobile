@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function MenuItem({ menuItem }) {
     return (
         <View style={styles.menuItemContainer}>
-            <Text>
+            <Text style={styles.menuItemName}>
                 {menuItem.name}
             </Text>
             <Text>
@@ -23,5 +23,10 @@ const styles = StyleSheet.create({
         marginTop: 16,
         borderBottomColor: '#e6ebe7',
         borderBottomWidth: 1,
+    },
+    menuItemName: {
+        fontWeight: 'bold',
+        fontSize: 15,
+        marginBottom: 5
     }
 });

@@ -1,25 +1,20 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
-import MenuItem from '../components/MenuItem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from "@react-navigation/native";
+import * as axios from 'react-native-axios';
+
+import MenuItem from '../components/MenuItem';
 
 export default function RestaurantScreen({ route, navigation }) {
   [checkoutButtonVisible, setCheckoutButtonVisible] = useState(false);
   [orderPrice, setOrderPrice] = useState(0);
-  [restaurantWithMenuItems, setRestaurantWithMenuItems] = useState(
-    {
-      id: '1', name: 'La Fresh', address: 'Brace Ribnikar 3', openingTime: '09:00', closingTime: '20:00', menuItems: [
-        { id: '1', name: 'Cheeseburger', price: 200.0, description: 'Best cheesburger', restaurantId: '1' },
-        { id: '2', name: 'Burrito', price: 150.0, description: 'Best Burrito', restaurantId: '1' },
-        { id: '3', name: 'Pizza', price: 200.0, description: 'Best pizza', restaurantId: '1' },
-        { id: '4', name: 'Pepperoni Pizza', price: 200.0, description: 'Worst one', restaurantId: '1' },
-        { id: '5', name: 'Capricozza', price: 200.0, description: 'Best ever', restaurantId: '1' }]
-    }
-  )
+  [restaurantWithMenuItems, setRestaurantWithMenuItems] = useState({});
+  [loading, setLoading] = useState(false);
 
   const { restaurantId } = route.params;
+  const getRestaurantUrl = 'https://voltaire-api-gateway-cvy8ozaz.ew.gateway.dev/restaurants/' + restaurantId;
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -27,10 +22,52 @@ export default function RestaurantScreen({ route, navigation }) {
   }, [isFocused]);
 
   useEffect(() => {
+    getRestaurant();
+  }, []);
+
+  useEffect(() => {
     navigation.setOptions({
       title: restaurantWithMenuItems.name,
     });
   }, [navigation, restaurantWithMenuItems.name]);
+
+  const getRestaurant = () => {
+    console.log(getRestaurantUrl);
+    axios.get(getRestaurantUrl)
+        .then(response => {
+            setRestaurantWithMenuItems(response.data)
+        })
+        .catch(error => {
+            console.log("Error fetching a single restaurants")
+            console.log(error);
+        })
+}
+
+axios.interceptors.request.use(
+    async config => {
+        const token = await getIdToken();
+        if (token) {
+            config.headers.Authorization = "Bearer " + token;
+        }
+        return config;
+    },
+    error => {
+        return Promise.reject(error)
+    }
+);
+
+const getIdToken = async () => {
+    try {
+        const idToken = await AsyncStorage.getItem('@idToken')
+        if (idToken === null) {
+            return undefined;
+        }
+        return idToken;
+    } catch (e) {
+        console.log("Error with reading refresh token from navigation");
+        console.log(e);
+    }
+}
 
   const getOrder = async () => {
     try {
@@ -84,7 +121,7 @@ export default function RestaurantScreen({ route, navigation }) {
       {checkoutButtonVisible && <View style={styles.buttonContainer}>
         <Button
           title={"Go to checkout (" + orderPrice + " RSD)"}
-          onPress={() => {navigation.navigate("Checkout")}}
+          onPress={() => { navigation.navigate("Checkout") }}
         />
       </View>}
     </View>

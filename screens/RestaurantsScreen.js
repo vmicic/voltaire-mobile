@@ -8,28 +8,43 @@ import * as axios from 'react-native-axios';
 import RestaurantItem from '../components/RestaurantItem'
 
 export default function RestaurantsScreen({ navigation }) {
-    [resturants, setRestaurants] = useState([
-        { id: '1', name: 'La fresh', description: 'Best pizza', address: 'Brace Ribnikar 10' },
-        { id: '2', name: 'Sef', description: 'Best sendwichees', address: 'Brace Ribnikar 3' },
-        { id: '3', name: 'Kao nekad', description: 'Best cooked meals', address: 'Danila Kisa 4' }
-    ])
+    [resturants, setRestaurants] = useState([]);
 
-    const postmanEcho = 'https://postman-echo.com/get';
     const getAllRestaurantsUrl = 'https://voltaire-api-gateway-cvy8ozaz.ew.gateway.dev/restaurants';
+    const isFocused = useIsFocused();
+
+    useEffect(() => {
+        clearCart();
+    }, [isFocused]);
+
+    useEffect(() => {
+        getRestaurants();
+    }, []);
 
     const getRestaurants = () => {
         axios.get(getAllRestaurantsUrl)
-            .then((response) => {
-                console.log("This is response from getting all restaurants");
-                console.log(response.data);
+            .then(response => {
                 setRestaurants(response.data)
             })
-            .catch((error) => {
-                console.log("Couldnt get all restaurants")
+            .catch(error => {
+                console.log("Error fetching all restaurants")
                 console.log(error);
             })
     }
-    
+
+    axios.interceptors.request.use(
+        async config => {
+            const token = await getIdToken();
+            if (token) {
+                config.headers.Authorization = "Bearer " + token;
+            }
+            return config;
+        },
+        error => {
+            return Promise.reject(error)
+        }
+    );
+
     const getIdToken = async () => {
         try {
             const idToken = await AsyncStorage.getItem('@idToken')
@@ -42,30 +57,6 @@ export default function RestaurantsScreen({ navigation }) {
             console.log(e);
         }
     }
-
-    axios.interceptors.request.use(
-        async config => {
-          const token = await getIdToken();
-          if (token) {
-            config.headers.Authorization = "Bearer "+ token;
-          }
-          return config;
-        },
-        error => {
-          return Promise.reject(error)
-        }
-    );
-
-    const isFocused = useIsFocused();
-
-    useEffect(() => {
-        clearCart();
-    }, [isFocused]);
-
-    useEffect(() => {
-        console.log("Calling use effect for restaurants init")
-        getRestaurants();
-    }, []);
 
     const clearCart = async () => {
         try {
@@ -81,7 +72,7 @@ export default function RestaurantsScreen({ navigation }) {
                 keyExtractor={item => item.id}
                 renderItem={({ item }) => (
                     <TouchableOpacity onPress={() => {
-                        navigation.navigate('Restaurant', { restaurantId: item.key });
+                        navigation.navigate('Restaurant', { restaurantId: item.id });
                     }}>
                         <RestaurantItem restaurant={item} />
                     </TouchableOpacity>

@@ -17,18 +17,19 @@ export default function Navigation() {
     const refreshIdTokenUrl = 'https://identitytoolkit.googleapis.com/v1/token?key=AIzaSyDyi6Eyf9398GAGqa1B4DB-uReBGFJfPbE';
 
     useEffect(() => {
-        initApplication();
+        tokenSetup();
     }, []);
 
-    const initApplication = () => {
+    const tokenSetup = () => {
         refreshIdToken();
     }
 
     const refreshIdToken = async () => {
         const refreshToken = await getRefreshToken();
-        if (refreshToken === undefined) {
+        if (refreshToken === null) {
             setInitialRouteName("Login");
             setLoading(false);
+            return;
         }
 
         requestNewIdToken(refreshToken);
@@ -36,11 +37,7 @@ export default function Navigation() {
 
     const getRefreshToken = async () => {
         try {
-            const refreshToken = await AsyncStorage.getItem('@refreshToken')
-            if (refreshToken === null) {
-                return undefined;
-            }
-            return refreshToken;
+            return await AsyncStorage.getItem('@refreshToken');
         } catch (e) {
             console.log("Error with reading refresh token from navigation");
             console.log(e);
@@ -87,7 +84,7 @@ export default function Navigation() {
                 screenOptions={{
                     headerShown: false
                 }}
-                initialRouteName={"Home"}
+                initialRouteName={initialRouteName}
 
             >
                 <MainStack.Screen name="Login" component={LoginScreen} />

@@ -122,7 +122,7 @@ const getIdToken = async () => {
         <Button
           title={"Go to checkout (" + orderPrice + " RSD)"}
           onPress={() => { navigation.navigate("Checkout") }}
-        />
+        /> 
       </View>}
     </View>
   );

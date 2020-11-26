@@ -1,29 +1,99 @@
-import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React, { useEffect, useState } from 'react';
+import { View } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'react-native-axios/lib/axios';
 
-import ProfileScreen from '../screens/ProfileScreen';
-import RestaurantsStackScreen from '../screens/RestaurantsStackScreen';
-import CheckoutScreen from '../screens/CheckoutScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import LoginScreen from '../screens/LoginScreen';
+import { ActivityIndicator } from 'react-native';
 
-const MainStack = createStackNavigator();
 
 export default function Navigation() {
+    [initialRouteName, setInitialRouteName] = useState("Login");
+    [loading, setLoading] = useState(true);
+
+    const refreshIdTokenUrl = 'https://identitytoolkit.googleapis.com/v1/token?key=AIzaSyDyi6Eyf9398GAGqa1B4DB-uReBGFJfPbE';
+
+    useEffect(() => {
+        initApplication();
+    }, []);
+
+    const initApplication = () => {
+        refreshIdToken();
+    }
+
+    const refreshIdToken = async () => {
+        const refreshToken = await getRefreshToken();
+        if (refreshToken === undefined) {
+            setInitialRouteName("Login");
+            setLoading(false);
+        }
+
+        requestNewIdToken(refreshToken);
+    }
+
+    const getRefreshToken = async () => {
+        try {
+            const refreshToken = await AsyncStorage.getItem('@refreshToken')
+            if (refreshToken === null) {
+                return undefined;
+            }
+            return refreshToken;
+        } catch (e) {
+            console.log("Error with reading refresh token from navigation");
+            console.log(e);
+        }
+    }
+
+    const requestNewIdToken = (refreshToken) => {
+        axios.post(refreshIdTokenUrl, {
+            grant_type: "refresh_token",
+            refresh_token: refreshToken,
+        })
+            .then(response => {
+                const idToken = response.data.id_token;
+                storeToken("idToken", idToken);
+                setInitialRouteName("Home");
+                setLoading(false);
+            })
+            .catch(error => {
+                console.log("Error refreshing token");
+                console.log(error);
+            })
+    }
+
+    const storeToken = async (name, token) => {
+        try {
+            const storageKey = "@" + name;
+            await AsyncStorage.setItem(storageKey, token)
+        } catch (e) {
+            console.log("Error storing token")
+            console.log(e);
+        }
+    }
+
+    const MainStack = createStackNavigator();
+
     return (
         <NavigationContainer>
+            {loading ? 
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+                <ActivityIndicator size="large" color="blue" />
+            </View> 
+            : 
             <MainStack.Navigator
                 screenOptions={{
                     headerShown: false
                 }}
+                initialRouteName={"Home"}
+
             >
                 <MainStack.Screen name="Login" component={LoginScreen} />
-                <MainStack.Screen name="BottomTabNavigator" component={BottomTabNavigator} />
+                <MainStack.Screen name="Home" component={BottomTabNavigator} />
             </MainStack.Navigator>
+            }
         </NavigationContainer>
     );
 }

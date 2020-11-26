@@ -45,8 +45,6 @@ export default function RestaurantScreen({ route, navigation }) {
   }
 
   const buttonSetup = async () => {
-
-    console.log("Button setup invoked");
     let order = await getOrder();
 
     if (order === undefined) {

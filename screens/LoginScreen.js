@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import * as axios from 'react-native-axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function ProfileScreen({ navigation }) {
+export default function LoginScreen({ navigation }) {
     [email, setEmail] = useState('');
     [password, setPassword] = useState('');
     [loginError, setLoginError] = useState(false);
@@ -16,33 +17,38 @@ export default function ProfileScreen({ navigation }) {
             email: email,
             password: password,
             returnSecureToken: true
-        })
-            .then((response) => {
-                const token = response.data.idToken;
-                storeIdToken(token);
+            })
+            .then(response => {
+                const idToken = response.data.idToken;
+                const refreshToken = response.data.refreshToken;
+                storeToken("idToken", idToken);
+                storeToken("refreshToken", refreshToken);
                 navigation.reset({
                     index: 0,
                     routes: [
                         {
-                            name: 'BottomTabNavigator'
+                            name: 'Home'
                         }
                     ]
                 })
             })
-            .catch(function (error) {
+            .catch(error => {
                 console.log("Login response error")
                 console.log(error);
                 setLoginError(true);
             });
     }
 
-    const storeIdToken = async (idToken) => {
+    const storeToken = async (name, token) => {
         try {
-            await AsyncStorage.setItem('@idToken', idToken)
+            const storageKey = "@" + name;
+            await AsyncStorage.setItem(storageKey, token)
         } catch (e) {
-            console.log("Error with id token store")
+            console.log("Error storing token")
+            console.log(e);
         }
     }
+    
 
     const updateEmail = (val) => {
         setEmail(val);

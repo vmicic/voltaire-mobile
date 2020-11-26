@@ -113,7 +113,7 @@ const getIdToken = async () => {
           data={restaurantWithMenuItems.menuItems}
           keyExtractor={item => item.id}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => navigation.navigate('Menu Item', { menuItem: item })}>
+            <TouchableOpacity onPress={() => navigation.navigate('Menu Item', { menuItem: item, restaurantId: restaurantWithMenuItems.id })}>
               <MenuItem menuItem={item} />
             </TouchableOpacity>
           )} />

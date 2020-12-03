@@ -5,50 +5,19 @@ import { FlatList } from 'react-native-gesture-handler';
 import * as axios from 'axios';
 
 import OrderItem from '../components/OrderItem';
+import useOrder from '../custom_hooks/useOrder';
 
 export default function CheckoutScreen({ navigation }) {
   [orderPrice, setOrderPrice] = useState(0);
-  [order, setOrder] = useState({});
+  order = useOrder();
 
   const postOrderUrl = 'https://voltaire-api-gateway-cvy8ozaz.ew.gateway.dev/orders';
 
   useEffect(() => {
-    orderSetup();
+    setOrderPrice(global.price)
   }, []);
 
-  useEffect(() => {
-    if (order.orderItems === undefined) {
-      return;
-    } else {
-      price = order.orderItems.reduce(
-        (accumulatedPrice, currentValue) => accumulatedPrice + currentValue.price * currentValue.quantity, 0
-      );
-
-      setOrderPrice(global.price);
-    }
-  }, [order]);
-
-  const orderSetup = async () => {
-    let order = await getOrder();
-    if (order === undefined) {
-      return;
-    }
-
-    setOrder(order);
-  }
-
-  const getOrder = async () => {
-    try {
-      const orderJson = await AsyncStorage.getItem('@order')
-      if (orderJson === null) {
-        return undefined;
-      }
-      return JSON.parse(orderJson);
-    } catch (e) {
-      console.log("Error with parsing order");
-    }
-  }
-
+  
   const confirmOrder = () => {
     console.log(JSON.stringify(order))
     axios

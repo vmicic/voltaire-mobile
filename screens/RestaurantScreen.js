@@ -13,6 +13,7 @@ export default function RestaurantScreen({ route, navigation }) {
   [orderPrice, setOrderPrice] = useState(0);
   [restaurantWithMenuItems, setRestaurantWithMenuItems] = useState({});
   [loading, setLoading] = useState(true);
+  [order, setOrder] = useState({});
 
   const { restaurantId } = route.params;
   const getRestaurantUrl = 'https://voltaire-api-gateway-cvy8ozaz.ew.gateway.dev/restaurants/' + restaurantId;
@@ -71,6 +72,25 @@ export default function RestaurantScreen({ route, navigation }) {
     }
   }
 
+  const buttonSetup = async () => {
+    let order = await getOrder();
+
+    if (order === undefined) {
+      setCheckoutButtonVisible(false);
+      return;
+    }
+
+    setOrder(order);
+
+    price = order.orderItems.reduce(
+      (accumulatedPrice, currentValue) => accumulatedPrice + currentValue.price * currentValue.quantity, 0
+    );
+
+    setOrderPrice(price);
+    global.price = price;
+    setCheckoutButtonVisible(true);
+  }
+
   const getOrder = async () => {
     try {
       const orderJson = await AsyncStorage.getItem('@order')
@@ -81,25 +101,6 @@ export default function RestaurantScreen({ route, navigation }) {
     } catch (e) {
       console.log("Error with async storage");
     }
-  }
-
-  const buttonSetup = async () => {
-    let order = await getOrder();
-
-    if (order === undefined) {
-      setCheckoutButtonVisible(false);
-      return;
-    }
-
-    price = 0;
-
-    order.orderItems.forEach(orderItem => {
-      price += orderItem.price * orderItem.quantity;
-    });
-
-    setOrderPrice(price);
-    global.price = price;
-    setCheckoutButtonVisible(true);
   }
 
 

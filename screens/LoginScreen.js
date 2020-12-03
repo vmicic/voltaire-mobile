@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
-import * as axios from 'react-native-axios';
+import * as axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen({ navigation }) {
@@ -12,7 +12,6 @@ export default function LoginScreen({ navigation }) {
     const loginUrl = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDyi6Eyf9398GAGqa1B4DB-uReBGFJfPbE';
 
     const submitLogin = () => {
-
         axios.post(loginUrl, {
             email: email,
             password: password,
@@ -65,13 +64,13 @@ export default function LoginScreen({ navigation }) {
                     placeholder="email"
                     style={styles.textInput}
                     value={email}
-                    onChangeText={updateEmail}
+                    onChangeText={email => setEmail(email)}
                 />
                 <TextInput
                     placeholder="password"
                     style={styles.textInput}
                     value={password}
-                    onChangeText={updatePassword}
+                    onChangeText={password => setPassword(password)}
                     secureTextEntry={true}
                 />
                 <View style={styles.loginButtonContainer}>

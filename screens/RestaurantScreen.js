@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Button } from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from "@react-navigation/native";
-import * as axios from 'react-native-axios';
+import * as axios from 'axios';
 import { ActivityIndicator } from 'react-native';
 
 import MenuItem from '../components/MenuItem';
@@ -98,6 +98,7 @@ export default function RestaurantScreen({ route, navigation }) {
     });
 
     setOrderPrice(price);
+    global.price = price;
     setCheckoutButtonVisible(true);
   }
 

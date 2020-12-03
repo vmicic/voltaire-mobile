@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlatList } from 'react-native-gesture-handler';
-import * as axios from 'react-native-axios';
+import * as axios from 'axios';
 
 import OrderItem from '../components/OrderItem';
 
@@ -16,6 +16,18 @@ export default function CheckoutScreen({ navigation }) {
     orderSetup();
   }, []);
 
+  useEffect(() => {
+    if (order.orderItems === undefined) {
+      return;
+    } else {
+      price = order.orderItems.reduce(
+        (accumulatedPrice, currentValue) => accumulatedPrice + currentValue.price * currentValue.quantity, 0
+      );
+
+      setOrderPrice(global.price);
+    }
+  }, [order]);
+
   const orderSetup = async () => {
     let order = await getOrder();
     if (order === undefined) {
@@ -23,14 +35,6 @@ export default function CheckoutScreen({ navigation }) {
     }
 
     setOrder(order);
-
-    price = 0;
-
-    order.orderItems.forEach(orderItem => {
-      price += orderItem.price * orderItem.quantity;
-    });
-
-    setOrderPrice(price);
   }
 
   const getOrder = async () => {
@@ -95,7 +99,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white'
   },
   priceButtonContainer: {
-    flex:1,
+    flex: 1,
     justifyContent: 'space-between'
   },
   priceContainer: {

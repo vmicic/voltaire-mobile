@@ -35,8 +35,6 @@ export default function MenuItemScreen({ route, navigation }) {
         }
         
         let order = await getOrder();
-        console.log("This is order");
-        console.log(order);
         order.orderItems.push({ menuItemId: menuItem.id, menuItemName: menuItem.name, price: menuItem.price, quantity: quantity, additionalInfo: additionalInfo })
         saveOrder(order);
         

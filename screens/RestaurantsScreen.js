@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from "@react-navigation/native";
-import * as axios from 'react-native-axios';
+import * as axios from 'axios';
 import { ActivityIndicator } from 'react-native';
 
 import RestaurantItem from '../components/RestaurantItem'

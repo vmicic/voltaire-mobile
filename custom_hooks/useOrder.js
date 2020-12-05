@@ -7,7 +7,6 @@ export default function useOrder() {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    console.log("Executing useEffect in useOrder " + isFocused);
     loadOrder();
   }, [isFocused]);
 
@@ -17,7 +16,6 @@ export default function useOrder() {
       return;
     }
 
-    console.log("Setting order in useOrder.js");
     setOrder(order);
   }
 
@@ -32,8 +30,7 @@ export default function useOrder() {
       console.log("Error with async storage");
     }
   }
-  console.log("Returning order")
-  console.log(order)
+
   return order;
 }
 

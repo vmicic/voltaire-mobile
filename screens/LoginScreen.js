@@ -103,7 +103,8 @@ const styles = StyleSheet.create({
     },
     textInput: {
         borderColor: 'black',
-        borderBottomWidth: 1
+        borderBottomWidth: 1,
+        paddingTop: 20
     },
     loginButtonContainer: {
         marginTop: 50

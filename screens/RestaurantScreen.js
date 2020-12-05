@@ -13,26 +13,18 @@ export default function RestaurantScreen({ route, navigation }) {
   [checkoutButtonVisible, setCheckoutButtonVisible] = useState(false);
   [orderPrice, setOrderPrice] = useState(0);
   [restaurantWithMenuItems, setRestaurantWithMenuItems] = useState({});
-  [loading, setLoading] = useState(true);
+  [loading, setLoading] = useState(false);
   order = useOrder();
 
   const { restaurantId } = route.params;
   const getRestaurantUrl = 'https://voltaire-api-gateway-cvy8ozaz.ew.gateway.dev/restaurants/' + restaurantId;
-  const isFocused = useIsFocused();
-
-  // useEffect(() => {
-  //   console.log("Restaurant screen is focused, calling button setup");
-  //   buttonSetup();
-  // }, [isFocused]);
 
   useEffect(() => {
     getRestaurant();
   }, []);
 
   useEffect(() => {
-    console.log("Calling use effect order dependency");
-    console.log("This is order")
-    buttonSetup();
+    calculateOrderPrice();
   }, [order]);
 
   useEffect(() => {
@@ -42,7 +34,6 @@ export default function RestaurantScreen({ route, navigation }) {
   }, [navigation, restaurantWithMenuItems.name]);
 
   const getRestaurant = () => {
-    console.log(getRestaurantUrl);
     axios.get(getRestaurantUrl)
       .then(response => {
         setRestaurantWithMenuItems(response.data)
@@ -80,14 +71,13 @@ export default function RestaurantScreen({ route, navigation }) {
     }
   }
 
-  const buttonSetup = async () => {
+  const calculateOrderPrice = async () => {
     if (order.orderItems === undefined) {
-      console.log("Order doesn't exists")
       setCheckoutButtonVisible(false);
       return;
     } 
 
-    console.log("Order exists, calculating order price");
+    console.log("RestaurantsScreen: Order exists, calculating order price");
 
     price = order.orderItems.reduce(
       (accumulatedPrice, currentValue) => accumulatedPrice + currentValue.price * currentValue.quantity, 0
@@ -97,19 +87,6 @@ export default function RestaurantScreen({ route, navigation }) {
     global.price = price;
     setCheckoutButtonVisible(true);
   }
-
-  const getOrder = async () => {
-    try {
-      const orderJson = await AsyncStorage.getItem('@order')
-      if (orderJson === null) {
-        return undefined;
-      }
-      return JSON.parse(orderJson);
-    } catch (e) {
-      console.log("Error with async storage");
-    }
-  }
-
 
   return (
     <View style={styles.contentContainer}>

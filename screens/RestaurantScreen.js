@@ -7,25 +7,33 @@ import * as axios from 'axios';
 import { ActivityIndicator } from 'react-native';
 
 import MenuItem from '../components/MenuItem';
+import useOrder from '../custom_hooks/useOrder';
 
 export default function RestaurantScreen({ route, navigation }) {
   [checkoutButtonVisible, setCheckoutButtonVisible] = useState(false);
   [orderPrice, setOrderPrice] = useState(0);
   [restaurantWithMenuItems, setRestaurantWithMenuItems] = useState({});
   [loading, setLoading] = useState(true);
-  [order, setOrder] = useState({});
+  order = useOrder();
 
   const { restaurantId } = route.params;
   const getRestaurantUrl = 'https://voltaire-api-gateway-cvy8ozaz.ew.gateway.dev/restaurants/' + restaurantId;
   const isFocused = useIsFocused();
 
-  useEffect(() => {
-    buttonSetup();
-  }, [isFocused]);
+  // useEffect(() => {
+  //   console.log("Restaurant screen is focused, calling button setup");
+  //   buttonSetup();
+  // }, [isFocused]);
 
   useEffect(() => {
     getRestaurant();
   }, []);
+
+  useEffect(() => {
+    console.log("Calling use effect order dependency");
+    console.log("This is order")
+    buttonSetup();
+  }, [order]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -73,14 +81,13 @@ export default function RestaurantScreen({ route, navigation }) {
   }
 
   const buttonSetup = async () => {
-    let order = await getOrder();
-
-    if (order === undefined) {
+    if (order.orderItems === undefined) {
+      console.log("Order doesn't exists")
       setCheckoutButtonVisible(false);
       return;
-    }
+    } 
 
-    setOrder(order);
+    console.log("Order exists, calculating order price");
 
     price = order.orderItems.reduce(
       (accumulatedPrice, currentValue) => accumulatedPrice + currentValue.price * currentValue.quantity, 0

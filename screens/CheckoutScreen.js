@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlatList } from 'react-native-gesture-handler';
 import * as axios from 'axios';
 
@@ -17,7 +16,7 @@ export default function CheckoutScreen({ navigation }) {
     setOrderPrice(global.price)
   }, []);
 
-  
+
   const confirmOrder = () => {
     console.log(JSON.stringify(order))
     axios

@@ -9,12 +9,17 @@ import BottomTabNavigator from './BottomTabNavigator';
 import LoginScreen from '../screens/LoginScreen';
 import { ActivityIndicator } from 'react-native';
 
+import ApiAuthService from '../api/ApiAuthService';
+
 
 export default function Navigation() {
     [initialRouteName, setInitialRouteName] = useState("Login");
     [loading, setLoading] = useState(true);
 
     const refreshIdTokenUrl = 'https://identitytoolkit.googleapis.com/v1/token?key=AIzaSyDyi6Eyf9398GAGqa1B4DB-uReBGFJfPbE';
+    const postmanecho = "https://postman-echo.com/post";
+
+    const instance = axios.create();
 
     useEffect(() => {
         tokenSetup();
@@ -45,7 +50,7 @@ export default function Navigation() {
     }
 
     const requestNewIdToken = (refreshToken) => {
-        axios.post(refreshIdTokenUrl, {
+        ApiAuthService.auth.refreshIdToken({
             grant_type: "refresh_token",
             refresh_token: refreshToken,
         })
@@ -56,7 +61,7 @@ export default function Navigation() {
                 setLoading(false);
             })
             .catch(error => {
-                console.log("Error refreshing token");
+                console.log("Error refreshing token in navigation");
                 console.log(error);
             })
     }

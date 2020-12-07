@@ -1,11 +1,10 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as axios from 'axios';
 import { ActivityIndicator } from 'react-native';
 
 import MenuItem from '../components/MenuItem';
+import ApiService from '../api/ApiService';
 
 export default function RestaurantScreen({ route, navigation }) {
   [checkoutButtonVisible, setCheckoutButtonVisible] = useState(false);
@@ -36,10 +35,10 @@ export default function RestaurantScreen({ route, navigation }) {
 
 
   const getRestaurant = () => {
-    axios.get(getRestaurantUrl)
+    ApiService.restaurants.getRestaurant(restaurantId)
       .then(response => {
         setRestaurantWithMenuItems(response.data)
-        var newOrder = {...order, restaurantId: restaurantWithMenuItems.id}
+        var newOrder = { ...order, restaurantId: restaurantWithMenuItems.id }
         setOrder(newOrder);
         setLoading(false);
       })
@@ -49,36 +48,10 @@ export default function RestaurantScreen({ route, navigation }) {
       })
   }
 
-  axios.interceptors.request.use(
-    async config => {
-      const token = await getIdToken();
-      if (token) {
-        config.headers.Authorization = "Bearer " + token;
-      }
-      return config;
-    },
-    error => {
-      return Promise.reject(error)
-    }
-  );
-
-  const getIdToken = async () => {
-    try {
-      const idToken = await AsyncStorage.getItem('@idToken')
-      if (idToken === null) {
-        return undefined;
-      }
-      return idToken;
-    } catch (e) {
-      console.log("Error with reading refresh token from navigation");
-      console.log(e);
-    }
-  }
-
   const addToOrder = (orderItem) => {
     var orderItemsNew = order.orderItems.slice();
     orderItemsNew.push(orderItem);
-    var newOrder = {...order, orderItems: orderItemsNew};
+    var newOrder = { ...order, orderItems: orderItemsNew };
     setOrder(newOrder);
   }
 
@@ -124,7 +97,7 @@ export default function RestaurantScreen({ route, navigation }) {
           {checkoutButtonVisible && <View style={styles.buttonContainer}>
             <Button
               title={"Go to checkout (" + orderPrice + " RSD)"}
-              onPress={() => { navigation.navigate("Checkout", {order: order}) }}
+              onPress={() => { navigation.navigate("Checkout", { order: order }) }}
             />
           </View>}
         </View>}

@@ -3,16 +3,15 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from "@react-navigation/native";
-import * as axios from 'axios';
 import { ActivityIndicator } from 'react-native';
 
-import RestaurantItem from '../components/RestaurantItem'
+import RestaurantItem from '../components/RestaurantItem';
+import ApiService from '../api/ApiService'
 
 export default function RestaurantsScreen({ navigation }) {
     [resturants, setRestaurants] = useState([]);
     [loading, setLoading] = useState(true);
 
-    const getAllRestaurantsUrl = 'https://voltaire-api-gateway-cvy8ozaz.ew.gateway.dev/restaurants';
     const isFocused = useIsFocused();
 
     useEffect(() => {
@@ -24,7 +23,7 @@ export default function RestaurantsScreen({ navigation }) {
     }, []);
 
     const getRestaurants = () => {
-        axios.get(getAllRestaurantsUrl)
+        ApiService.restaurants.getAll()
             .then(response => {
                 setRestaurants(response.data)
                 setLoading(false);
@@ -33,32 +32,6 @@ export default function RestaurantsScreen({ navigation }) {
                 console.log("Error fetching all restaurants")
                 console.log(error);
             })
-    }
-
-    axios.interceptors.request.use(
-        async config => {
-            const token = await getIdToken();
-            if (token) {
-                config.headers.Authorization = "Bearer " + token;
-            }
-            return config;
-        },
-        error => {
-            return Promise.reject(error)
-        }
-    );
-
-    const getIdToken = async () => {
-        try {
-            const idToken = await AsyncStorage.getItem('@idToken')
-            if (idToken === null) {
-                return undefined;
-            }
-            return idToken;
-        } catch (e) {
-            console.log("Error with reading refresh token from navigation");
-            console.log(e);
-        }
     }
 
     const clearCart = async () => {

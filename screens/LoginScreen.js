@@ -4,6 +4,8 @@ import { TextInput } from 'react-native-gesture-handler';
 import * as axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import ApiAuthService from '../api/ApiAuthService';
+
 export default function LoginScreen({ navigation }) {
     [email, setEmail] = useState('');
     [password, setPassword] = useState('');
@@ -12,7 +14,7 @@ export default function LoginScreen({ navigation }) {
     const loginUrl = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDyi6Eyf9398GAGqa1B4DB-uReBGFJfPbE';
 
     const submitLogin = () => {
-        axios.post(loginUrl, {
+        ApiAuthService.auth.login ({
             email: email,
             password: password,
             returnSecureToken: true

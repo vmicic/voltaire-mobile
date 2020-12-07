@@ -1,13 +1,12 @@
 import React, { useState, useLayoutEffect } from 'react';
-import { StyleSheet, View, Text, Button, Keyboard, TextInput, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, View, Text, Button, Keyboard, TextInput, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 export default function MenuItemScreen({ route, navigation }) {
     [quantity, setQuantity] = useState(1);
     [additionalInfo, setAdditionalInfo] = useState('');
-    //order = useOrder("MenuItemScreen");
 
-    const { menuItem, restaurantId, addToOrder } = route.params;
+    const { menuItem, addToOrder } = route.params;
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -39,12 +38,11 @@ export default function MenuItemScreen({ route, navigation }) {
         navigation.goBack();
     }
 
-    return (
-        <TouchableWithoutFeedback
-            onPress={() => {
-                Keyboard.dismiss();
-            }}>
+    return (         
             <View style={styles.menuItemContainer}>
+                <Pressable
+                    onPress={() => Keyboard.dismiss()}
+                >
                 <View style={styles.menuItemNameContainer}>
                     <Text style={styles.menuItemName}>
                         {menuItem.name}
@@ -82,6 +80,7 @@ export default function MenuItemScreen({ route, navigation }) {
                         />
                     </View>
                 </View>
+                </Pressable>
 
                 <View style={styles.additionalInfoContainer}>
                     <View>
@@ -105,7 +104,6 @@ export default function MenuItemScreen({ route, navigation }) {
                 </View>
 
             </View>
-        </TouchableWithoutFeedback>
     );
 }
 

@@ -89,7 +89,7 @@ export default function RestaurantScreen({ route, navigation }) {
               data={restaurantWithMenuItems.menuItems}
               keyExtractor={item => item.id}
               renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => navigation.navigate('Menu Item', { menuItem: item, restaurantId: restaurantWithMenuItems.id, addToOrder: addToOrder })}>
+                <TouchableOpacity onPress={() => navigation.navigate('Menu Item', { menuItem: item, addToOrder: addToOrder })}>
                   <MenuItem menuItem={item} />
                 </TouchableOpacity>
               )} />

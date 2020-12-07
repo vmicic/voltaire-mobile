@@ -2,23 +2,23 @@ import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useIsFocused } from "@react-navigation/native";
 import * as axios from 'axios';
 import { ActivityIndicator } from 'react-native';
 
 import MenuItem from '../components/MenuItem';
-import useOrder from '../custom_hooks/useOrder';
 
 export default function RestaurantScreen({ route, navigation }) {
   [checkoutButtonVisible, setCheckoutButtonVisible] = useState(false);
   [orderPrice, setOrderPrice] = useState(0);
   [restaurantWithMenuItems, setRestaurantWithMenuItems] = useState({});
-  [loading, setLoading] = useState(false);
-  [order, setOrder] = useOrder("RestaurantScreen");
+  [loading, setLoading] = useState(true);
+  [order, setOrder] = useState({
+    restaurantId: "",
+    orderItems: []
+  });
 
   const { restaurantId } = route.params;
   const getRestaurantUrl = 'https://voltaire-api-gateway-cvy8ozaz.ew.gateway.dev/restaurants/' + restaurantId;
-  const isFocused = useIsFocused();
 
   useEffect(() => {
     getRestaurant();
@@ -26,7 +26,7 @@ export default function RestaurantScreen({ route, navigation }) {
 
   useEffect(() => {
     calculateOrderPrice();
-  }, [isFocused, order]);
+  }, [order.orderItems]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -34,11 +34,14 @@ export default function RestaurantScreen({ route, navigation }) {
     });
   }, [navigation, restaurantWithMenuItems.name]);
 
+
   const getRestaurant = () => {
     axios.get(getRestaurantUrl)
       .then(response => {
         setRestaurantWithMenuItems(response.data)
-        //setLoading(false);
+        var newOrder = {...order, restaurantId: restaurantWithMenuItems.id}
+        setOrder(newOrder);
+        setLoading(false);
       })
       .catch(error => {
         console.log("Error fetching a single restaurants")
@@ -72,16 +75,18 @@ export default function RestaurantScreen({ route, navigation }) {
     }
   }
 
+  const addToOrder = (orderItem) => {
+    var orderItemsNew = order.orderItems.slice();
+    orderItemsNew.push(orderItem);
+    var newOrder = {...order, orderItems: orderItemsNew};
+    setOrder(newOrder);
+  }
+
   const calculateOrderPrice = async () => {
-    console.log("Calculating price for RestaurantScreen");
-    console.log(order)
-    if (order.orderItems === undefined) {
-      console.log("RestaurantScreen: Order doesnt exists");
+    if (order.orderItems.length === 0) {
       setCheckoutButtonVisible(false);
       return;
-    } 
-
-    console.log("RestaurantsScreen: Order exists, calculating order price");
+    }
 
     price = order.orderItems.reduce(
       (accumulatedPrice, currentValue) => accumulatedPrice + currentValue.price * currentValue.quantity, 0
@@ -111,7 +116,7 @@ export default function RestaurantScreen({ route, navigation }) {
               data={restaurantWithMenuItems.menuItems}
               keyExtractor={item => item.id}
               renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => navigation.navigate('Menu Item', { menuItem: item, restaurantId: restaurantWithMenuItems.id })}>
+                <TouchableOpacity onPress={() => navigation.navigate('Menu Item', { menuItem: item, restaurantId: restaurantWithMenuItems.id, addToOrder: addToOrder })}>
                   <MenuItem menuItem={item} />
                 </TouchableOpacity>
               )} />
@@ -119,7 +124,7 @@ export default function RestaurantScreen({ route, navigation }) {
           {checkoutButtonVisible && <View style={styles.buttonContainer}>
             <Button
               title={"Go to checkout (" + orderPrice + " RSD)"}
-              onPress={() => { navigation.navigate("Checkout") }}
+              onPress={() => { navigation.navigate("Checkout", {order: order}) }}
             />
           </View>}
         </View>}

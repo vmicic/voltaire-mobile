@@ -1,16 +1,13 @@
 import React, { useState, useLayoutEffect } from 'react';
 import { StyleSheet, View, Text, Button, Keyboard, TextInput, TouchableWithoutFeedback } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import useOrder from '../custom_hooks/useOrder';
 
 export default function MenuItemScreen({ route, navigation }) {
     [quantity, setQuantity] = useState(1);
     [additionalInfo, setAdditionalInfo] = useState('');
-    [order, setOrder] = useOrder("MenuItemScreen");
+    //order = useOrder("MenuItemScreen");
 
-    const { menuItem, restaurantId } = route.params;
+    const { menuItem, restaurantId, addToOrder } = route.params;
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -37,54 +34,9 @@ export default function MenuItemScreen({ route, navigation }) {
         setAdditionalInfo(val);
     }
 
-    const addToOrder = async () => {
-        console.log("Adding to order")
-        if(quantity < 1) {
-            alert("Quantity must be greater than 0.");
-            return;
-        }
-        
-        if(order.orderItems === undefined) {
-            console.log("MenuItemScreen: order is not existing");
-            order = {
-                restaurantId: restaurantId,
-                orderItems: []
-            }
-        } else {
-            console.log("MenuItemScreen: Order already exists");
-        }
-        order.orderItems.push({ menuItemId: menuItem.id, menuItemName: menuItem.name, price: menuItem.price, quantity: quantity, additionalInfo: additionalInfo })
-        setOrder(order);
-        console.log("MenuItemScreen: Order saved.")
-        console.log(order);
-        
-        //navigation.goBack();
-    }
-
-    const getOrder = async () => {
-        try {
-            const orderJson = await AsyncStorage.getItem('@order')
-            if (orderJson === null) {
-                let order = {
-                    restaurantId: restaurantId,
-                    orderItems: []
-                }
-                return order;
-            }
-
-            return JSON.parse(orderJson);
-        } catch (e) {
-        }
-    }
-
-    const saveOrder = async (order) => {
-        try {
-            console.log("MenuItemScreen: Saving order")
-            const jsonValue = JSON.stringify(order)
-            await AsyncStorage.setItem('@order', jsonValue)
-          } catch (e) {
-            // saving error
-          }
+    const addClick = () => {
+        addToOrder({ menuItemId: menuItem.id, menuItemName: menuItem.name, price: menuItem.price, quantity: quantity, additionalInfo: additionalInfo });
+        navigation.goBack();
     }
 
     return (
@@ -147,7 +99,7 @@ export default function MenuItemScreen({ route, navigation }) {
                     <View>
                         <Button
                             title="Add to order"
-                            onPress={addToOrder}
+                            onPress={addClick}
                         />
                     </View>
                 </View>

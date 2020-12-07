@@ -4,18 +4,16 @@ import { FlatList } from 'react-native-gesture-handler';
 import * as axios from 'axios';
 
 import OrderItem from '../components/OrderItem';
-import useOrder from '../custom_hooks/useOrder';
 
-export default function CheckoutScreen({ navigation }) {
+export default function CheckoutScreen({ route, navigation }) {
   [orderPrice, setOrderPrice] = useState(0);
-  order = useOrder();
 
   const postOrderUrl = 'https://voltaire-api-gateway-cvy8ozaz.ew.gateway.dev/orders';
+  const {order} = route.params;
 
   useEffect(() => {
     setOrderPrice(global.price)
   }, []);
-
 
   const confirmOrder = () => {
     console.log(JSON.stringify(order))

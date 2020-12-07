@@ -3,11 +3,20 @@ import { StyleSheet, View, Text, Button, Keyboard, TextInput, TouchableWithoutFe
 import Icon from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import useOrder from '../custom_hooks/useOrder';
+
 export default function MenuItemScreen({ route, navigation }) {
     [quantity, setQuantity] = useState(1);
     [additionalInfo, setAdditionalInfo] = useState('');
+    [order, setOrder] = useOrder("MenuItemScreen");
 
     const { menuItem, restaurantId } = route.params;
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            title: ""
+        });
+    }, [navigation]);
 
     const increaseQuantity = () => {
         setQuantity(previousQuantity => {
@@ -29,16 +38,27 @@ export default function MenuItemScreen({ route, navigation }) {
     }
 
     const addToOrder = async () => {
+        console.log("Adding to order")
         if(quantity < 1) {
             alert("Quantity must be greater than 0.");
             return;
         }
         
-        let order = await getOrder();
+        if(order.orderItems === undefined) {
+            console.log("MenuItemScreen: order is not existing");
+            order = {
+                restaurantId: restaurantId,
+                orderItems: []
+            }
+        } else {
+            console.log("MenuItemScreen: Order already exists");
+        }
         order.orderItems.push({ menuItemId: menuItem.id, menuItemName: menuItem.name, price: menuItem.price, quantity: quantity, additionalInfo: additionalInfo })
-        await saveOrder(order);
+        setOrder(order);
+        console.log("MenuItemScreen: Order saved.")
+        console.log(order);
         
-        navigation.goBack();
+        //navigation.goBack();
     }
 
     const getOrder = async () => {
@@ -59,18 +79,13 @@ export default function MenuItemScreen({ route, navigation }) {
 
     const saveOrder = async (order) => {
         try {
+            console.log("MenuItemScreen: Saving order")
             const jsonValue = JSON.stringify(order)
             await AsyncStorage.setItem('@order', jsonValue)
           } catch (e) {
             // saving error
           }
     }
-
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            title: ""
-        });
-    }, [navigation, ""]);
 
     return (
         <TouchableWithoutFeedback

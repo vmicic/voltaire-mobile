@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react'
 import { useIsFocused } from "@react-navigation/native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function useOrder() {
+export default function useOrder(screenName) {
   [order, setOrder] = useState({});
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    loadOrder();
-  }, [isFocused]);
+    console.log("useOrder: UseEffect for loading order, screen: " + screenName);
+    //loadOrder();
+  }, []);
 
   const loadOrder = async () => {
     let order = await getOrder();
@@ -16,6 +17,7 @@ export default function useOrder() {
       return;
     }
 
+    console.log("useOrder: Setting an order for screen: " + screenName);
     setOrder(order);
   }
 
@@ -31,6 +33,8 @@ export default function useOrder() {
     }
   }
 
-  return order;
+  console.log("useOrder: Returning an order, for screen: " + screenName)
+  console.log(order)
+  return [order, setOrder];
 }
 

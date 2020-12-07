@@ -14,10 +14,11 @@ export default function RestaurantScreen({ route, navigation }) {
   [orderPrice, setOrderPrice] = useState(0);
   [restaurantWithMenuItems, setRestaurantWithMenuItems] = useState({});
   [loading, setLoading] = useState(false);
-  order = useOrder();
+  [order, setOrder] = useOrder("RestaurantScreen");
 
   const { restaurantId } = route.params;
   const getRestaurantUrl = 'https://voltaire-api-gateway-cvy8ozaz.ew.gateway.dev/restaurants/' + restaurantId;
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     getRestaurant();
@@ -25,7 +26,7 @@ export default function RestaurantScreen({ route, navigation }) {
 
   useEffect(() => {
     calculateOrderPrice();
-  }, [order]);
+  }, [isFocused, order]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -37,7 +38,7 @@ export default function RestaurantScreen({ route, navigation }) {
     axios.get(getRestaurantUrl)
       .then(response => {
         setRestaurantWithMenuItems(response.data)
-        setLoading(false);
+        //setLoading(false);
       })
       .catch(error => {
         console.log("Error fetching a single restaurants")
@@ -72,7 +73,10 @@ export default function RestaurantScreen({ route, navigation }) {
   }
 
   const calculateOrderPrice = async () => {
+    console.log("Calculating price for RestaurantScreen");
+    console.log(order)
     if (order.orderItems === undefined) {
+      console.log("RestaurantScreen: Order doesnt exists");
       setCheckoutButtonVisible(false);
       return;
     } 

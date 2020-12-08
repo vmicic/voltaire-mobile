@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import * as axios from 'axios';
 
 import OrderItem from '../components/OrderItem';
+import Error from '../components/Error';
+import ApiService from '../api/ApiService';
 
 export default function CheckoutScreen({ route, navigation }) {
   [orderPrice, setOrderPrice] = useState(0);
+  [createOrderError, setCreateOrderError] = useState(false);
 
-  const postOrderUrl = 'https://voltaire-api-gateway-cvy8ozaz.ew.gateway.dev/orders';
   const {order} = route.params;
 
   useEffect(() => {
@@ -17,19 +18,20 @@ export default function CheckoutScreen({ route, navigation }) {
 
   const confirmOrder = () => {
     console.log(JSON.stringify(order))
-    axios
-      .post(postOrderUrl, order)
+    ApiService.orders.create(order)
       .then(() => {
         navigation.navigate("Restaurants");
       })
       .catch(error => {
-        console.log("Error with posting order");
-        console.log(error);
+        setCreateOrderError(true);
       })
   }
 
   return (
     <View style={styles.checkoutContainer}>
+      {createOrderError ? <Error errorText="Error confirming order."></Error>
+      :
+      <View style={{flex: 1}}>
       <View style={styles.orderItemsContainer}>
         <FlatList
           data={order.orderItems}
@@ -51,7 +53,9 @@ export default function CheckoutScreen({ route, navigation }) {
           />
         </View>
       </View>
+      </View>}
     </View>
+
   );
 }
 

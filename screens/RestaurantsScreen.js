@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Button } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from "@react-navigation/native";
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, DevSettings } from 'react-native';
 
 import RestaurantItem from '../components/RestaurantItem';
 import ApiService from '../api/ApiService'
+import Error from '../components/Error';
 
 export default function RestaurantsScreen({ navigation }) {
-    [resturants, setRestaurants] = useState([]);
+    [restaurants, setRestaurants] = useState([]);
     [loading, setLoading] = useState(true);
+    [error, setError] = useState(false);
 
     const isFocused = useIsFocused();
 
@@ -29,8 +31,8 @@ export default function RestaurantsScreen({ navigation }) {
                 setLoading(false);
             })
             .catch(error => {
-                console.log("Error fetching all restaurants")
-                console.log(error);
+                setLoading(false);
+                setError(true);
             })
     }
 
@@ -43,13 +45,16 @@ export default function RestaurantsScreen({ navigation }) {
 
     return (
         <View style={styles.content}>
-            {loading ?
-                <View style={{ flex: 1, justifyContent: 'center' }}>
+            {error && <Error errorText="Error loading restaurants."></Error>}
+            {loading &&
+                < View style={{ flex: 1, justifyContent: 'center' }}>
                     <ActivityIndicator size="large" color="blue" />
                 </View>
-                :
+            }
+            {
+                restaurants[0] &&
                 <FlatList
-                    data={resturants}
+                    data={restaurants}
                     keyExtractor={item => item.id}
                     renderItem={({ item }) => (
                         <TouchableOpacity onPress={() => {
@@ -57,8 +62,9 @@ export default function RestaurantsScreen({ navigation }) {
                         }}>
                             <RestaurantItem restaurant={item} />
                         </TouchableOpacity>
-                    )} />}
-        </View>
+                    )} />
+            }
+        </View >
     );
 }
 
@@ -68,4 +74,13 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: 'white',
     },
+    errorContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        textAlign: 'center'
+    },
+    errorText: {
+        textAlign: 'center',
+        color: 'green'
+    }
 });

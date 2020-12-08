@@ -5,19 +5,20 @@ import { ActivityIndicator } from 'react-native';
 
 import MenuItem from '../components/MenuItem';
 import ApiService from '../api/ApiService';
+import Error from '../components/Error';
 
 export default function RestaurantScreen({ route, navigation }) {
   [checkoutButtonVisible, setCheckoutButtonVisible] = useState(false);
   [orderPrice, setOrderPrice] = useState(0);
   [restaurantWithMenuItems, setRestaurantWithMenuItems] = useState({});
   [loading, setLoading] = useState(true);
+  [restaurantRequestError, setRestaurantRequestError] = useState(false);
   [order, setOrder] = useState({
     restaurantId: "",
     orderItems: []
   });
 
   const { restaurantId } = route.params;
-  const getRestaurantUrl = 'https://voltaire-api-gateway-cvy8ozaz.ew.gateway.dev/restaurants/' + restaurantId;
 
   useEffect(() => {
     getRestaurant();
@@ -42,10 +43,13 @@ export default function RestaurantScreen({ route, navigation }) {
         setOrder(newOrder);
         setLoading(false);
       })
-      .catch(error => {
-        console.log("Error fetching a single restaurants")
-        console.log(error);
-      })
+      .catch(errorResponse => {
+        console.log("Error loading restaurant");
+        console.log("Setting error");
+        setRestaurantRequestError(true);
+        setLoading(false);
+        console.log("This is error " + error);
+      });
   }
 
   const addToOrder = (orderItem) => {
@@ -72,11 +76,13 @@ export default function RestaurantScreen({ route, navigation }) {
 
   return (
     <View style={styles.contentContainer}>
-      {loading ?
+      {restaurantRequestError && <Error errorText="Error loading resturant.">Error</Error>}
+      { loading &&
         <View style={{ flex: 1, justifyContent: 'center' }}>
           <ActivityIndicator size="large" color="blue" />
         </View>
-        :
+      }
+      { restaurantWithMenuItems.address &&
         <View style={styles.restaurantContainer}>
           <View style={styles.restaurantDetailsContainer}>
             <Text style={styles.restaurantName}>{restaurantWithMenuItems.name}</Text>

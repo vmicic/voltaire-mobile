@@ -1,10 +1,10 @@
 import axios from 'axios'
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import AsyncStorageService from '../components/AsyncStorageService';
 
 const getAllRestaurantsUrl = 'https://voltaire-api-gateway-cvy8ozaz.ew.gateway.dev/restaurants';
 const getRestaurantUrl = 'https://voltaire-api-gateway-cvy8ozaz.ew.gateway.dev/restaurants/';
+const createOrderUrl = 'https://voltaire-api-gateway-cvy8ozaz.ew.gateway.dev/orders';
 
 axios.interceptors.request.use(
     async config => {
@@ -26,6 +26,11 @@ export default {
         },
         getRestaurant(id) {
             return axios.get(getRestaurantUrl + id);
+        }
+    },
+    orders:{
+        create(order) {
+            return axios.post("da", order);
         }
     }
 };

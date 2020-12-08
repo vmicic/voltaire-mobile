@@ -30,7 +30,7 @@ export default {
     },
     orders:{
         create(order) {
-            return axios.post("da", order);
+            return axios.post(createOrderUrl, order);
         }
     }
 };

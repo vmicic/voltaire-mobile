@@ -1,30 +1,65 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
-import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
-import { ActivityIndicator } from 'react-native';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useEffect, useState} from 'react';
+import {View, Text, StyleSheet, Button} from 'react-native';
+import {FlatList, TouchableOpacity} from 'react-native-gesture-handler';
+import {ActivityIndicator} from 'react-native';
 
 import MenuItem from '../components/MenuItem';
 import ApiService from '../api/ApiService';
 import Error from '../components/Error';
 
-export default function RestaurantScreen({ route, navigation }) {
-  [checkoutButtonVisible, setCheckoutButtonVisible] = useState(false);
-  [orderPrice, setOrderPrice] = useState(0);
-  [restaurantWithMenuItems, setRestaurantWithMenuItems] = useState({});
-  [loading, setLoading] = useState(true);
-  [restaurantRequestError, setRestaurantRequestError] = useState(false);
-  [order, setOrder] = useState({
-    restaurantId: "",
-    orderItems: []
+export default function RestaurantScreen({route, navigation}) {
+  const [checkoutButtonVisible, setCheckoutButtonVisible] = useState(false);
+  const [orderPrice, setOrderPrice] = useState(0);
+  const [restaurantWithMenuItems, setRestaurantWithMenuItems] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [restaurantRequestError, setRestaurantRequestError] = useState(false);
+  const [order, setOrder] = useState({
+    restaurantId: '',
+    orderItems: [],
   });
 
-  const { restaurantId } = route.params;
+  const {restaurantId} = route.params;
 
   useEffect(() => {
+    const getRestaurant = () => {
+      ApiService.restaurants
+        .getRestaurant(restaurantId)
+        .then((response) => {
+          setRestaurantWithMenuItems(response.data);
+          var newOrder = {...order, restaurantId: restaurantWithMenuItems.id};
+          setOrder(newOrder);
+          setLoading(false);
+        })
+        .catch((_errorResponse) => {
+          console.log('Error loading restaurant');
+          console.log('Setting error');
+          setRestaurantRequestError(true);
+          setLoading(false);
+        });
+    };
+
     getRestaurant();
-  }, []);
+  }, [restaurantId]);
 
   useEffect(() => {
+    const calculateOrderPrice = async () => {
+      if (order.orderItems.length === 0) {
+        setCheckoutButtonVisible(false);
+        return;
+      }
+
+      const price = order.orderItems.reduce(
+        (accumulatedPrice, currentValue) =>
+          accumulatedPrice + currentValue.price * currentValue.quantity,
+        0,
+      );
+
+      setOrderPrice(price);
+      global.price = price;
+      setCheckoutButtonVisible(true);
+    };
+
     calculateOrderPrice();
   }, [order.orderItems]);
 
@@ -34,106 +69,96 @@ export default function RestaurantScreen({ route, navigation }) {
     });
   }, [navigation, restaurantWithMenuItems.name]);
 
-
-  const getRestaurant = () => {
-    ApiService.restaurants.getRestaurant(restaurantId)
-      .then(response => {
-        setRestaurantWithMenuItems(response.data)
-        var newOrder = { ...order, restaurantId: restaurantWithMenuItems.id }
-        setOrder(newOrder);
-        setLoading(false);
-      })
-      .catch(errorResponse => {
-        console.log("Error loading restaurant");
-        console.log("Setting error");
-        setRestaurantRequestError(true);
-        setLoading(false);
-        console.log("This is error " + error);
-      });
-  }
-
   const addToOrder = (orderItem) => {
     var orderItemsNew = order.orderItems.slice();
     orderItemsNew.push(orderItem);
-    var newOrder = { ...order, orderItems: orderItemsNew };
+    var newOrder = {...order, orderItems: orderItemsNew};
     setOrder(newOrder);
-  }
-
-  const calculateOrderPrice = async () => {
-    if (order.orderItems.length === 0) {
-      setCheckoutButtonVisible(false);
-      return;
-    }
-
-    price = order.orderItems.reduce(
-      (accumulatedPrice, currentValue) => accumulatedPrice + currentValue.price * currentValue.quantity, 0
-    );
-
-    setOrderPrice(price);
-    global.price = price;
-    setCheckoutButtonVisible(true);
-  }
+  };
 
   return (
     <View style={styles.contentContainer}>
-      {restaurantRequestError && <Error errorText="Error loading resturant.">Error</Error>}
-      { loading &&
-        <View style={{ flex: 1, justifyContent: 'center' }}>
+      {restaurantRequestError && (
+        <Error errorText="Error loading resturant.">Error</Error>
+      )}
+      {loading && (
+        <View style={styles.activityIndicator}>
           <ActivityIndicator size="large" color="blue" />
         </View>
-      }
-      { restaurantWithMenuItems.address &&
+      )}
+      {restaurantWithMenuItems.address && (
         <View style={styles.restaurantContainer}>
           <View style={styles.restaurantDetailsContainer}>
-            <Text style={styles.restaurantName}>{restaurantWithMenuItems.name}</Text>
+            <Text style={styles.restaurantName}>
+              {restaurantWithMenuItems.name}
+            </Text>
             <Text>{restaurantWithMenuItems.address}</Text>
-            <Text>Working hours: {restaurantWithMenuItems.openingTime}:{restaurantWithMenuItems.closingTime}</Text>
+            <Text>
+              Working hours: {restaurantWithMenuItems.openingTime}:
+              {restaurantWithMenuItems.closingTime}
+            </Text>
           </View>
           <View style={styles.menuItemsContainer}>
             <FlatList
               showsVerticalScrollIndicator={false}
               data={restaurantWithMenuItems.menuItems}
-              keyExtractor={item => item.id}
-              renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => navigation.navigate('Menu Item', { menuItem: item, addToOrder: addToOrder })}>
+              keyExtractor={(item) => item.id}
+              renderItem={({item}) => (
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate('Menu Item', {
+                      menuItem: item,
+                      addToOrder: addToOrder,
+                    })
+                  }>
                   <MenuItem menuItem={item} />
                 </TouchableOpacity>
-              )} />
-          </View>
-          {checkoutButtonVisible && <View style={styles.buttonContainer}>
-            <Button
-              title={"Go to checkout (" + orderPrice + " RSD)"}
-              onPress={() => { navigation.navigate("Checkout", { order: order }) }}
+              )}
             />
-          </View>}
-        </View>}
+          </View>
+          {checkoutButtonVisible && (
+            <View style={styles.buttonContainer}>
+              <Button
+                title={'Go to checkout (' + orderPrice + ' RSD)'}
+                onPress={() => {
+                  navigation.navigate('Checkout', {order: order});
+                }}
+              />
+            </View>
+          )}
+        </View>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   contentContainer: {
-    flex: 1
+    flex: 1,
+  },
+  activityIndicator: {
+    flex: 1,
+    justifyContent: 'center',
   },
   restaurantContainer: {
     flex: 1,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
   restaurantDetailsContainer: {
     padding: 20,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
   restaurantName: {
     fontWeight: 'bold',
     fontSize: 30,
-    marginBottom: 10
+    marginBottom: 10,
   },
   menuItemsContainer: {
     marginTop: 20,
     flex: 1,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
   buttonContainer: {
-    padding: 20
-  }
+    padding: 20,
+  },
 });

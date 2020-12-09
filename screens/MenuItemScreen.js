@@ -54,7 +54,7 @@ export default function MenuItemScreen({route, navigation}) {
 
   return (
     <View style={styles.menuItemContainer}>
-      <Pressable onPress={() => Keyboard.dismiss()}>
+      <Pressable onPress={() => Keyboard.dismiss()} testID="pressable">
         <View style={styles.menuItemNameContainer}>
           <Text style={styles.menuItemName}>{menuItem.name}</Text>
           <Text>{menuItem.description}</Text>
@@ -73,6 +73,7 @@ export default function MenuItemScreen({route, navigation}) {
               color="black"
               backgroundColor="white"
               onPress={deductQuantity}
+              testID="decreaseQuantity"
             />
             <Text style={styles.quantityText}>{quantity}</Text>
             <Icon.Button
@@ -83,6 +84,7 @@ export default function MenuItemScreen({route, navigation}) {
               color="black"
               backgroundColor="white"
               onPress={increaseQuantity}
+              testID="increaseQuantity"
             />
           </View>
         </View>
@@ -98,11 +100,12 @@ export default function MenuItemScreen({route, navigation}) {
               multiline={true}
               value={additionalInfo}
               onChangeText={updateAdditionalInfo}
+              testID="additionalInfo"
             />
           </View>
         </View>
         <View>
-          <Button title="Add to order" onPress={addClick} />
+          <Button title="Add to order" onPress={addClick} testID="addToOrder" />
         </View>
       </View>
     </View>

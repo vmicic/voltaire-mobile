@@ -24,6 +24,7 @@ export default function CheckoutScreen({route, navigation}) {
         navigation.navigate('Restaurants');
       })
       .catch((error) => {
+        console.log(error);
         setCreateOrderError(true);
       });
   };
@@ -47,7 +48,11 @@ export default function CheckoutScreen({route, navigation}) {
               <Text>{orderPrice} RSD</Text>
             </View>
             <View style={styles.buttonContainer}>
-              <Button title="Confirm order" onPress={confirmOrder} />
+              <Button
+                title="Confirm order"
+                onPress={confirmOrder}
+                testID="confirmOrder"
+              />
             </View>
           </View>
         </View>

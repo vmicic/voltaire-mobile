@@ -64,6 +64,7 @@ export default function LoginScreen({navigation}) {
           style={styles.textInput}
           value={email}
           onChangeText={updateEmail}
+          testID="email"
         />
         <TextInput
           placeholder="password"
@@ -71,9 +72,10 @@ export default function LoginScreen({navigation}) {
           value={password}
           onChangeText={updatePassword}
           secureTextEntry={true}
+          testID="password"
         />
         <View style={styles.loginButtonContainer}>
-          <Button title="Login" onPress={submitLogin} />
+          <Button title="Login" onPress={submitLogin} testID="loginButton" />
         </View>
         <View style={styles.errorContainer}>
           {loginError && (

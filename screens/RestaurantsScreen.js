@@ -57,6 +57,7 @@ export default function RestaurantsScreen({navigation}) {
           keyExtractor={(item) => item.id}
           renderItem={({item}) => (
             <TouchableOpacity
+              testID={'restaurant' + item.id}
               onPress={() => {
                 navigation.navigate('Restaurant', {restaurantId: item.id});
               }}>

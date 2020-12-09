@@ -14,12 +14,12 @@ export default function RestaurantScreen({route, navigation}) {
   const [restaurantWithMenuItems, setRestaurantWithMenuItems] = useState({});
   const [loading, setLoading] = useState(true);
   const [restaurantRequestError, setRestaurantRequestError] = useState(false);
-  const [order, setOrder] = useState({
-    restaurantId: '',
-    orderItems: [],
-  });
 
   const {restaurantId} = route.params;
+  const [order, setOrder] = useState({
+    restaurantId: restaurantId,
+    orderItems: [],
+  });
 
   useEffect(() => {
     const getRestaurant = () => {
@@ -27,11 +27,9 @@ export default function RestaurantScreen({route, navigation}) {
         .getRestaurant(restaurantId)
         .then((response) => {
           setRestaurantWithMenuItems(response.data);
-          var newOrder = {...order, restaurantId: restaurantWithMenuItems.id};
-          setOrder(newOrder);
           setLoading(false);
         })
-        .catch((_errorResponse) => {
+        .catch((errorResponse) => {
           console.log('Error loading restaurant');
           console.log('Setting error');
           setRestaurantRequestError(true);
@@ -110,7 +108,8 @@ export default function RestaurantScreen({route, navigation}) {
                       menuItem: item,
                       addToOrder: addToOrder,
                     })
-                  }>
+                  }
+                  testID={'menuItem' + item.id}>
                   <MenuItem menuItem={item} />
                 </TouchableOpacity>
               )}
@@ -123,6 +122,7 @@ export default function RestaurantScreen({route, navigation}) {
                 onPress={() => {
                   navigation.navigate('Checkout', {order: order});
                 }}
+                testID="goToCheckout"
               />
             </View>
           )}

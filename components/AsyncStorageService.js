@@ -19,4 +19,13 @@ const storeToken = async (name, token) => {
   }
 };
 
-export default {getToken, storeToken};
+const removeTokens = async () => {
+  try {
+    await AsyncStorage.removeItem('@idToken');
+    await AsyncStorage.removeItem('@refreshToken');
+  } catch (e) {
+    console.log('Error while removing tokens');
+  }
+};
+
+export default {getToken, storeToken, removeTokens};

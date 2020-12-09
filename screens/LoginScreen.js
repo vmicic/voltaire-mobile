@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
 import {View, Text, Button, StyleSheet} from 'react-native';
 import {TextInput} from 'react-native-gesture-handler';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import ApiAuthService from '../api/ApiAuthService';
+import AsyncStorageService from '../components/AsyncStorageService';
 
 export default function LoginScreen({navigation}) {
   const [email, setEmail] = useState('');
@@ -20,8 +20,8 @@ export default function LoginScreen({navigation}) {
       .then((response) => {
         const idToken = response.data.idToken;
         const refreshToken = response.data.refreshToken;
-        storeToken('idToken', idToken);
-        storeToken('refreshToken', refreshToken);
+        AsyncStorageService.storeToken('idToken', idToken);
+        AsyncStorageService.storeToken('refreshToken', refreshToken);
         navigation.reset({
           index: 0,
           routes: [
@@ -34,16 +34,6 @@ export default function LoginScreen({navigation}) {
       .catch((error) => {
         setLoginError(true);
       });
-  };
-
-  const storeToken = async (name, token) => {
-    try {
-      const storageKey = '@' + name;
-      await AsyncStorage.setItem(storageKey, token);
-    } catch (e) {
-      console.log('Error storing token');
-      console.log(e);
-    }
   };
 
   const updateEmail = (val) => {

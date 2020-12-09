@@ -1,10 +1,11 @@
 import React from 'react';
 import {View, StyleSheet, Button} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import AsyncStorageService from '../components/AsyncStorageService';
 
 export default function ProfileScreen({navigation}) {
   const logout = () => {
-    removeTokens();
+    AsyncStorageService.removeTokens();
     navigation.reset({
       index: 0,
       routes: [
@@ -13,15 +14,6 @@ export default function ProfileScreen({navigation}) {
         },
       ],
     });
-  };
-
-  const removeTokens = async () => {
-    try {
-      await AsyncStorage.removeItem('@idToken');
-      await AsyncStorage.removeItem('@refreshToken');
-    } catch (e) {
-      console.log('Error while removing tokens');
-    }
   };
 
   return (

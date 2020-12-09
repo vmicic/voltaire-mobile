@@ -32,8 +32,6 @@ export default function LoginScreen({navigation}) {
         });
       })
       .catch((error) => {
-        console.log('Login response error');
-        console.log(error);
         setLoginError(true);
       });
   };

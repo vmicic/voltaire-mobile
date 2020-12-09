@@ -5,7 +5,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function ProfileScreen({navigation}) {
   const logout = () => {
     removeTokens();
-    navigation.navigate('Login');
+    navigation.reset({
+      index: 0,
+      routes: [
+        {
+          name: 'Login',
+        },
+      ],
+    });
   };
 
   const removeTokens = async () => {

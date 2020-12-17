@@ -1,26 +1,35 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, Image} from 'react-native';
+import tailwind from 'tailwind-rn';
 
 export default function MenuItem({menuItem}) {
   return (
-    <View style={styles.menuItemContainer}>
-      <Text style={styles.menuItemName}>{menuItem.name}</Text>
-      <Text>{menuItem.description}</Text>
-      <Text>{menuItem.price} RSD</Text>
+    <View style={tailwind('flex-1 flex-row p-4')}>
+      <View style={styles.detailsTextContainer}>
+        <Text style={tailwind('font-bold pr-4')} numberOfLines={1}>
+          {menuItem.name}
+        </Text>
+        <Text numberOfLines={1}>{menuItem.description}</Text>
+        <Text style={tailwind('mt-5 text-blue-500 font-bold')}>
+          {menuItem.price},00 RSD
+        </Text>
+      </View>
+      <View style={tailwind('flex-1')}>
+        <Image
+          style={tailwind('flex-1 rounded-xl')}
+          source={{
+            uri:
+              'https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg?quality=90&resize=700%2C636',
+          }}
+        />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  menuItemContainer: {
-    padding: 20,
-    marginTop: 16,
-    borderBottomColor: '#e6ebe7',
-    borderBottomWidth: 1,
-  },
-  menuItemName: {
-    fontWeight: 'bold',
-    fontSize: 15,
-    marginBottom: 5,
+  detailsTextContainer: {
+    flex: 2,
+    flexDirection: 'column',
   },
 });

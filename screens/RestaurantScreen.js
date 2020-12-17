@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, Button} from 'react-native';
-import {FlatList, TouchableOpacity} from 'react-native-gesture-handler';
+import {View, StyleSheet, Button} from 'react-native';
 import {ActivityIndicator} from 'react-native';
+import tailwind from 'tailwind-rn';
 
-import MenuItem from '../components/MenuItem';
 import ApiService from '../api/ApiService';
 import Error from '../components/Error';
+import Restaurant from '../components/Restaurant';
 
 export default function RestaurantScreen({route, navigation}) {
   const [checkoutButtonVisible, setCheckoutButtonVisible] = useState(false);
@@ -31,7 +31,6 @@ export default function RestaurantScreen({route, navigation}) {
         })
         .catch((errorResponse) => {
           console.log('Error loading restaurant');
-          console.log('Setting error');
           setRestaurantRequestError(true);
           setLoading(false);
         });
@@ -85,36 +84,12 @@ export default function RestaurantScreen({route, navigation}) {
         </View>
       )}
       {restaurantWithMenuItems.address && (
-        <View style={styles.restaurantContainer}>
-          <View style={styles.restaurantDetailsContainer}>
-            <Text style={styles.restaurantName}>
-              {restaurantWithMenuItems.name}
-            </Text>
-            <Text>{restaurantWithMenuItems.address}</Text>
-            <Text>
-              Working hours: {restaurantWithMenuItems.openingTime}:
-              {restaurantWithMenuItems.closingTime}
-            </Text>
-          </View>
-          <View style={styles.menuItemsContainer}>
-            <FlatList
-              showsVerticalScrollIndicator={false}
-              data={restaurantWithMenuItems.menuItems}
-              keyExtractor={(item) => item.id}
-              renderItem={({item}) => (
-                <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate('Menu Item', {
-                      menuItem: item,
-                      addToOrder: addToOrder,
-                    })
-                  }
-                  testID={'menuItem' + item.id}>
-                  <MenuItem menuItem={item} />
-                </TouchableOpacity>
-              )}
-            />
-          </View>
+        <View style={tailwind('flex-1 bg-white')}>
+          <Restaurant
+            restaurant={restaurantWithMenuItems}
+            addToOrder={addToOrder}
+            navigation={navigation}
+          />
           {checkoutButtonVisible && (
             <View style={styles.buttonContainer}>
               <Button

@@ -1,5 +1,6 @@
 import React from 'react';
-import {View, StyleSheet, Button} from 'react-native';
+import {View, StyleSheet, Button, Pressable, Text} from 'react-native';
+import tailwind from 'tailwind-rn';
 
 import AsyncStorageService from '../components/AsyncStorageService';
 
@@ -17,10 +18,14 @@ export default function ProfileScreen({navigation}) {
   };
 
   return (
-    <View style={styles.profileContainer}>
-      <View style={styles.logoutContainer}>
-        <Button title="Logout" color="#f23535" onPress={logout} />
-      </View>
+    <View style={tailwind('flex-1 bg-gray-200 justify-end')}>
+      <Pressable onPress={logout}>
+        <View style={tailwind('bg-red-700 p-4')}>
+          <View style={tailwind('flex-row justify-center')}>
+            <Text style={tailwind('text-white text-base')}>Logout</Text>
+          </View>
+        </View>
+      </Pressable>
     </View>
   );
 }

@@ -1,15 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  TouchableOpacity,
-  Button,
-  Pressable,
-  Image,
-} from 'react-native';
-import {ScrollView} from 'react-native-gesture-handler';
+import {Text, View, Pressable} from 'react-native';
 import tailwind from 'tailwind-rn';
 
 export default function RestaurantBasicInfo({restaurant}) {

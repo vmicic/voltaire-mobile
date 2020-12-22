@@ -1,16 +1,23 @@
-import React, {useState, useEffect} from 'react';
-import {View, Text, StyleSheet, Button} from 'react-native';
+import React, {useState, useEffect, useLayoutEffect} from 'react';
+import {View, Text, Pressable} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 
 import OrderItem from '../components/OrderItem';
 import Error from '../components/Error';
 import ApiService from '../api/ApiService';
+import tailwind from 'tailwind-rn';
 
 export default function CheckoutScreen({route, navigation}) {
   const [orderPrice, setOrderPrice] = useState(0);
   const [createOrderError, setCreateOrderError] = useState(false);
 
   const {order} = route.params;
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: '',
+    });
+  }, [navigation]);
 
   useEffect(() => {
     setOrderPrice(global.price);
@@ -30,60 +37,36 @@ export default function CheckoutScreen({route, navigation}) {
   };
 
   return (
-    <View style={styles.checkoutContainer}>
+    <View style={tailwind('flex-1 bg-gray-200')}>
       {createOrderError ? (
         <Error errorText="Error confirming order." />
       ) : (
-        <View style={styles.placeholderContainer}>
-          <View style={styles.orderItemsContainer}>
+        <View style={tailwind('flex-1')}>
+          <View style={tailwind('bg-white')}>
             <FlatList
               data={order.orderItems}
               keyExtractor={(item) => item.menuItemId}
               renderItem={({item}) => <OrderItem orderItem={item} />}
             />
           </View>
-          <View style={styles.priceButtonContainer}>
-            <View style={styles.priceContainer}>
+          <View style={tailwind('flex-1 justify-between')}>
+            <View
+              style={tailwind('flex-row justify-between bg-white px-4 py-6')}>
               <Text>Total price: </Text>
-              <Text>{orderPrice} RSD</Text>
+              <Text>{orderPrice},00 RSD</Text>
             </View>
-            <View style={styles.buttonContainer}>
-              <Button
-                title="Confirm order"
-                onPress={confirmOrder}
-                testID="confirmOrder"
-              />
-            </View>
+            <Pressable onPress={confirmOrder} testID="confirmOrder">
+              <View style={tailwind('p-4 mb-6 bg-blue-500')}>
+                <View style={tailwind('flex-row justify-center')}>
+                  <Text style={tailwind('text-base text-white')}>
+                    Confirm order
+                  </Text>
+                </View>
+              </View>
+            </Pressable>
           </View>
         </View>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  checkoutContainer: {
-    flex: 1,
-    backgroundColor: '#edf0ee',
-  },
-  placeholderContainer: {
-    flex: 1,
-  },
-  orderItemsContainer: {
-    paddingBottom: 15,
-    backgroundColor: 'white',
-  },
-  priceButtonContainer: {
-    flex: 1,
-    justifyContent: 'space-between',
-  },
-  priceContainer: {
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    padding: 20,
-    backgroundColor: 'white',
-  },
-  buttonContainer: {
-    padding: 20,
-  },
-});

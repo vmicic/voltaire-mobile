@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Button} from 'react-native';
+import {View, Text, Pressable} from 'react-native';
 import {ActivityIndicator} from 'react-native';
 import tailwind from 'tailwind-rn';
 
@@ -74,12 +73,12 @@ export default function RestaurantScreen({route, navigation}) {
   };
 
   return (
-    <View style={styles.contentContainer}>
+    <View style={tailwind('flex-1')}>
       {restaurantRequestError && (
         <Error errorText="Error loading resturant.">Error</Error>
       )}
       {loading && (
-        <View style={styles.activityIndicator}>
+        <View style={tailwind('flex-1 justify-center')}>
           <ActivityIndicator size="large" color="blue" />
         </View>
       )}
@@ -91,49 +90,25 @@ export default function RestaurantScreen({route, navigation}) {
             navigation={navigation}
           />
           {checkoutButtonVisible && (
-            <View style={styles.buttonContainer}>
-              <Button
-                title={'Go to checkout (' + orderPrice + ' RSD)'}
-                onPress={() => {
-                  navigation.navigate('Checkout', {order: order});
-                }}
-                testID="goToCheckout"
-              />
-            </View>
+            <Pressable
+              onPress={() => {
+                navigation.navigate('Checkout', {order: order});
+              }}
+              testID="goToCheckout">
+              <View style={tailwind('bg-blue-500 p-4 mb-6')}>
+                <View style={tailwind('flex-row justify-between')}>
+                  <Text style={tailwind('text-white text-base')}>
+                    Go to checkout
+                  </Text>
+                  <Text style={tailwind('text-white text-base')}>
+                    {orderPrice},00
+                  </Text>
+                </View>
+              </View>
+            </Pressable>
           )}
         </View>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  contentContainer: {
-    flex: 1,
-  },
-  activityIndicator: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  restaurantContainer: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  restaurantDetailsContainer: {
-    padding: 20,
-    backgroundColor: 'white',
-  },
-  restaurantName: {
-    fontWeight: 'bold',
-    fontSize: 30,
-    marginBottom: 10,
-  },
-  menuItemsContainer: {
-    marginTop: 20,
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  buttonContainer: {
-    padding: 20,
-  },
-});

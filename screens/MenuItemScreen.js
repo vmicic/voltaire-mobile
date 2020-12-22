@@ -3,12 +3,12 @@ import {
   StyleSheet,
   View,
   Text,
-  Button,
   Keyboard,
   TextInput,
   Pressable,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import tailwind from 'tailwind-rn';
 
 export default function MenuItemScreen({route, navigation}) {
   const [quantity, setQuantity] = useState(1);
@@ -53,34 +53,34 @@ export default function MenuItemScreen({route, navigation}) {
   };
 
   return (
-    <View style={styles.menuItemContainer}>
+    <View style={tailwind('flex-1 bg-gray-200')}>
       <Pressable onPress={() => Keyboard.dismiss()} testID="pressable">
-        <View style={styles.menuItemNameContainer}>
-          <Text style={styles.menuItemName}>{menuItem.name}</Text>
+        <View style={tailwind('bg-white p-4 mb-1')}>
+          <Text style={tailwind('font-bold text-4xl')}>{menuItem.name}</Text>
           <Text>{menuItem.description}</Text>
         </View>
 
-        <View style={styles.quantityContainer}>
+        <View style={tailwind('mb-1 flex-row bg-white p-4')}>
           <View style={styles.quantityLabelContainer}>
-            <Text style={styles.quantityLabel}>Quantity:</Text>
+            <Text>Quantity:</Text>
           </View>
           <View style={styles.quantityInputContainer}>
             <Icon.Button
               name="remove"
               size={25}
-              style={styles.buttonStyle}
-              iconStyle={styles.iconStyle}
+              style={tailwind('border rounded-3xl')}
+              iconStyle={tailwind('mr-0')}
               color="black"
               backgroundColor="white"
               onPress={deductQuantity}
               testID="decreaseQuantity"
             />
-            <Text style={styles.quantityText}>{quantity}</Text>
+            <Text>{quantity}</Text>
             <Icon.Button
               name="add"
               size={25}
-              iconStyle={styles.iconStyle}
-              style={styles.buttonStyle}
+              iconStyle={tailwind('mr-0')}
+              style={tailwind('border rounded-3xl bg-white')}
               color="black"
               backgroundColor="white"
               onPress={increaseQuantity}
@@ -90,56 +90,41 @@ export default function MenuItemScreen({route, navigation}) {
         </View>
       </Pressable>
 
-      <View style={styles.additionalInfoContainer}>
-        <View>
+      <View style={tailwind('flex-1 justify-between bg-white')}>
+        <View style={tailwind('p-4')}>
           <Text>Additional info: </Text>
-          <View style={styles.additionalInfoInputContainer}>
+          <View style={tailwind('mt-2')}>
             <TextInput
-              style={styles.additionalInfoInput}
+              style={tailwind('bg-gray-200 h-48')}
               placeholder="If you have additional informations please write it here."
               multiline={true}
+              numberOfLines={2}
               value={additionalInfo}
               onChangeText={updateAdditionalInfo}
               testID="additionalInfo"
             />
           </View>
         </View>
-        <View>
-          <Button title="Add to order" onPress={addClick} testID="addToOrder" />
-        </View>
+        <Pressable onPress={addClick} testID="addToOrder">
+          <View style={tailwind('p-4 mb-6 bg-blue-500')}>
+            <View style={tailwind('flex-row justify-center')}>
+              <Text style={tailwind('text-base text-white')}>Add to order</Text>
+            </View>
+          </View>
+        </Pressable>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  menuItemContainer: {
-    flex: 1,
-    backgroundColor: '#edf0ee',
-  },
-  menuItemNameContainer: {
-    marginBottom: 5,
-    padding: 20,
-    backgroundColor: 'white',
-  },
-  menuItemName: {
-    fontSize: 35,
-    fontWeight: 'bold',
-  },
-  quantityContainer: {
-    marginBottom: 5,
-    padding: 20,
-    flexDirection: 'row',
-    backgroundColor: 'white',
-  },
   quantityLabelContainer: {
     flex: 3,
     flexDirection: 'row',
-    height: 50,
+    height: 40,
     backgroundColor: 'white',
-  },
-  quantityLabel: {
-    textAlignVertical: 'center',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
   quantityInputContainer: {
     flex: 2,
@@ -148,33 +133,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     alignItems: 'center',
   },
-  quantityInput: {
-    width: 60,
-    height: 50,
-    backgroundColor: '#edf0ee',
-    textAlign: 'center',
-  },
-  buttonStyle: {
-    borderColor: 'black',
-    borderWidth: 1,
-    borderRadius: 25,
-  },
-  iconStyle: {
-    marginRight: 1,
-  },
-  quantityText: {
-    textAlignVertical: 'center',
-  },
-  additionalInfoContainer: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: 'white',
-    justifyContent: 'space-between',
-  },
   additionalInfoInputContainer: {
     marginTop: 10,
   },
   additionalInfoInput: {
     backgroundColor: '#edf0ee',
+    height: 150,
   },
 });

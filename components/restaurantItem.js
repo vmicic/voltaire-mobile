@@ -14,7 +14,7 @@ export default function RestaurantItem({restaurant}) {
           style={tailwind('flex-1 rounded-t-xl')}
           source={{
             uri:
-              'https://upload.wikimedia.org/wikipedia/commons/7/7c/Aspect_ratio_16_9_example.jpg',
+              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVum_xcLaK7VkfaWUvUqTaYu4YnzBJMEHl3w&usqp=CAU',
           }}
         />
       </View>

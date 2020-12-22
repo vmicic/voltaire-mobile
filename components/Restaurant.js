@@ -20,6 +20,7 @@ export default function Restaurant({navigation, restaurant, addToOrder}) {
       <ScrollView
         style={[styles.scrollView]}
         scrollEventThrottle={16}
+        showsVerticalScrollIndicator="false"
         onScroll={(e) => {
           handleYOffset(e.nativeEvent.contentOffset.y);
         }}>

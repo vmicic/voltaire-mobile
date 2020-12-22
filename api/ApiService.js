@@ -25,10 +25,58 @@ axios.interceptors.request.use(
 export default {
   restaurants: {
     getAll() {
-      return axios.get(getAllRestaurantsUrl);
+      return new Promise((resolve, reect) => {
+        setTimeout(() => {
+          resolve({
+            status: 200,
+            data: [
+              {
+                id: '1',
+                name: 'La fresh',
+                description: 'Best pizza, burgers and pancakes',
+                address: 'Brace Ribnikar 20',
+              },
+            ],
+          });
+        });
+      });
     },
     getRestaurant(id) {
-      return axios.get(getRestaurantUrl + id);
+      return new Promise((resolve, reect) => {
+        setTimeout(() => {
+          resolve({
+            status: 200,
+            data: {
+              id: '1',
+              name: 'La fresh',
+              description: 'Best pizza, burgers and pancakes',
+              address: 'Brace Ribnikar 20',
+              menuItems: [
+                {
+                  name: 'Burger',
+                  price: 100,
+                  description: 'Tasty bacon burger',
+                },
+                {
+                  name: 'Quesadilla',
+                  price: 200,
+                  description: 'Best Mexican quesadilla',
+                },
+                {
+                  name: 'Pancake',
+                  price: 150,
+                  description: 'Best sweet pancake',
+                },
+                {
+                  name: 'Pizza',
+                  description: 'Delicious pizza',
+                  price: 999,
+                },
+              ],
+            },
+          });
+        });
+      });
     },
   },
   orders: {

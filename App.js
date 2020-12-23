@@ -1,26 +1,11 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import Login from './components/login';
+import {LogBox} from 'react-native';
+
+import Navigation from './navigation/Navigation';
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <View style={styles.content}>
-        <Login />
-      </View>
-    </View>
-  )
+  LogBox.ignoreLogs([
+    'Non-serializable values were found in the navigation state',
+  ]);
+  return <Navigation />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  content: {
-    padding: 40,
-  },
-  list: {
-    marginTop: 20,
-  },
-});
